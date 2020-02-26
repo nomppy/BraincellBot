@@ -1,8 +1,10 @@
 import discord
 import os
 import time
+
 from dotenv import load_dotenv
 from ChangeStatus import change_status
+from keep_alive import keep_alive
 
 load_dotenv()
 client = discord.Client()
@@ -52,5 +54,5 @@ async def on_message(message):
                         f.write(str(count))
                     await message.channel.send('Braincell Counter successfully updated.')
 
-
+keep_alive()
 client.run(TOKEN)
