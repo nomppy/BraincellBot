@@ -1,5 +1,6 @@
 import discord
 import time
+import os
 
 from discord.ext.commands import CommandOnCooldown, CommandError
 from dotenv import load_dotenv
@@ -13,10 +14,10 @@ import aiohttp
 
 load_dotenv()
 BOT_PREFIX = 'b!'
-bot = commands.Bot(command_prefix=BOT_PREFIX)
+bot = commands.Bot(command_prefix='b!')
+client = discord.Client()
 
-# TOKEN = os.getenv('BOT_TOKEN')
-TOKEN = 'NjgyMjQzMzA0Mjg4NjgyMDc2.XlaKrg.QWSxX0dH4ubvlav19LYvU206vuo'
+BOT_TOKEN = os.getenv('TESTING_BOT_TOKEN')
 GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
@@ -40,8 +41,6 @@ async def ping(ctx):
     await ctx.send(f'Pong! {round(bot.latency, 1)}ms')
 
 
-@commands.cooldown(1, 10, commands.BucketType.member)
-@commands.command(aliases=['cat', 'sendcat', 'catpls', 'bestanimal', 'plscat'])
 async def meow(ctx):
     async with ctx.typing():
         async with aiohttp.ClientSession() as session:
@@ -58,15 +57,10 @@ async def meow(ctx):
                     await ctx.send(embed=discord.Embed().set_image(url=image_link))  # embeded image
 
 
-@meow.error
-async def meow_error(ctx, error):
-    await ctx.send(error)
-
-
 bot.add_command(ping)
-bot.add_command(meow)
 
 
+@bot.event
 async def on_ready():
     print('Logged in as')
     print(bot.user.name)
@@ -74,20 +68,30 @@ async def on_ready():
     print('------')
 
 
-last_change = time.mktime(time.gmtime(0))
+last_braincell = time.mktime(time.gmtime(0))
+last_meow = time.mktime(time.gmtime(0))
+just_tried = False
 
 
 @bot.event
 async def on_message(message):
-    global last_change
+    global last_braincell
+    global last_meow
+    global just_tried
     server = bot.get_guild(GUILD_ID)
-    if message.content in ['meow'] + bot.get_command('meow').aliases:
+    if message.content in ['meow', 'catpls', 'plscat', 'bestanimal']:
         ctx = await bot.get_context(message)
-        print(bot.get_command('meow').is_on_cooldown(await bot.get_context(message)))
-        if bot.get_command('meow').is_on_cooldown(await bot.get_context(message)):
-            await ctx.send('On cooldown.')
+        if time.time() - last_meow < 5:
+            if just_tried:
+                await ctx.send('Didn\'t you just try to do this?')
+            else:
+                await ctx.send('We don\'t want to get banned from the cat api, so please wait another '
+                               f'**{5 - int(time.time() - last_meow)}** seconds')
+                just_tried = True
         else:
             await meow(ctx)
+            last_meow = time.time()
+            just_tried = False
 
     # spes = server.get_member(USER_ID)
     # if message.channel == server.get_channel(681628374158147692):
@@ -115,4 +119,4 @@ async def on_message(message):
 
 
 keep_alive()
-bot.run(TOKEN)
+bot.run(BOT_TOKEN)
