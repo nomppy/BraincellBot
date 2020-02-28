@@ -1,5 +1,5 @@
-def change_status(message):
-    import requests
+async def change_status(message):
+    import aiohttp
     import os
     import json
     from dotenv import load_dotenv
@@ -32,4 +32,9 @@ def change_status(message):
     status_str = json.dumps(status, separators=(',', ':'))
     # status_str = '{"custom_status":{"text":"' + message + '"}}'
     print(status_str)
-    response = requests.patch('https://discordapp.com/api/v6/users/@me/settings', headers=headers, data=status_str)
+    async with aiohttp.ClientSession() as session:
+        response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
+                                       headers=headers,
+                                       data=status_str)
+
+    # response = requests.patch('https://discordapp.com/api/v6/users/@me/settings', headers=headers, data=status_str)
