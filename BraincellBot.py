@@ -1,7 +1,9 @@
+import asyncio
 import discord
 import time
 import os
 import aiohttp
+import random
 
 from dotenv import load_dotenv
 from ChangeStatus import change_status
@@ -20,15 +22,48 @@ GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
 
+pfp_timer = 0  # off
+
+
+@commands.command()
+@commands.is_owner()
+async def settings(ctx, *, module='display', lenience=300):
+    global pfp_timer
+    if module in ['display', 'show', 'list']:
+        await ctx.send(f'newpfp timer: {pfp_timer} (0 is off)')
+    if module.split()[:2] == ['newpfp', 'timer']:
+        pfp_timer = int(module.split()[2])
+        if pfp_timer == 0:
+            await ctx.send('`b!newpfp` timer has been turned off.')
+        else:
+            await ctx.send(f'`b!newpfp` is now set to trigger every {pfp_timer} (+- {lenience})seconds')
+            while pfp_timer != 0:
+                await asyncio.sleep(pfp_timer - lenience + random.randint(0, lenience*2))
+                await newpfp(ctx)
+
+
+@commands.command()
+@commands.cooldown(1, 3, BucketType.member)
+async def alive(ctx):
+    resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(', 'We\'re all gonna die anyway']
+    await ctx.send(resp[random.randint(0, len(resp)-1)])
+
+
+@alive.error
+async def alive_error(ctx, err):
+    await ctx.send('This command is on cooldown, but I guess I must be alive!')
+
 
 @commands.command()
 @commands.cooldown(1, 60, BucketType.member)
 @commands.is_owner()
 async def newpfp(ctx, arg='random'):
     async with ctx.typing():
-        img_link = arg
-        if arg in ['rand', 'random']:
-            img_link = await get_cat_link()
+        img_link = await get_cat_link()
+        if arg[-3:] in ['jpg', 'png']:
+            img_link = arg
+        elif len(ctx.message.attachments) == 1:
+            img_link = ctx.message.attachments[0].url
         # print(img_link)
         status = await change_pfp(img_link)
     await ctx.send(status)
@@ -62,6 +97,8 @@ async def meow(ctx):
 
 
 bot.add_command(newpfp)
+bot.add_command(alive)
+bot.add_command(settings)
 
 
 @bot.event
