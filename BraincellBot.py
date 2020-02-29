@@ -1,16 +1,12 @@
 import discord
 import time
 import os
+import aiohttp
 
-from discord.ext.commands import CommandOnCooldown, CommandError
 from dotenv import load_dotenv
 from ChangeStatus import change_status
 from keep_alive import keep_alive
 from discord.ext import commands
-from io import BytesIO
-from discord.ext.commands.cooldowns import BucketType
-from PIL import Image
-import aiohttp
 
 load_dotenv()
 BOT_PREFIX = 'b!'
