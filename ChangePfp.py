@@ -1,5 +1,4 @@
 async def change_pfp(img_link):
-    from io import BytesIO
     import aiohttp
     import os
     import time
