@@ -17,23 +17,10 @@ BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
 client = discord.Client()
 
-BOT_TOKEN = os.getenv('TESTING_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
-
-
-# class CommandOnCooldown(CommandError):
-#     def __init__(self, cooldown, retry_after):
-#         self.cooldown = cooldown
-#         self.retry_after = retry_after
-#         super().__init__('You are on cooldown. Try again in {:.2f}s'.format(retry_after))
-#         await
-
-
-async def fetch(session, url):
-    async with session.get(url) as response:
-        return await response.text()
 
 
 @commands.command()
@@ -93,28 +80,30 @@ async def on_message(message):
             last_meow = time.time()
             just_tried = False
 
-    # spes = server.get_member(USER_ID)
-    # if message.channel == server.get_channel(681628374158147692):
-    #     if server.get_role(681628171778785281) in message.author.roles:  # if author has the role
-    #         if 'braincells--' in message.content.lower() or 'braincells++' in message.content.lower():
-    #             if (time.time() - last_change) < 600 and message.author != spes:
-    #                 await message.channel.send(f'Give his braincells a break! Wait {600-int(time.time()-last_change)} seconds')
-    #             elif len(message.mentions) != 1 or message.mentions[0].id != USER_ID:
-    #                 await message.channel.send('Invalid mentions!')
-    #             else:
-    #                 with open('braincell_count', 'r') as f:
-    #                     count = int(f.read())
-    #                 print(f'Current Braincell Count: {count}')
-    #                 async with message.channel.typing():
-    #                     if 'braincells++' in message.content.lower():
-    #                         count = count + 1
-    #                     elif 'braincells--' in message.content.lower():
-    #                         count = count - 1
-    #                     change_status(f"Braincell Counter: {count}")
-    #                     last_change = time.time()
-    #                 with open('braincell_count', 'w') as f:
-    #                     f.write(str(count))
-    #                 await message.channel.send('Braincell Counter successfully updated.')
+    spes = server.get_member(USER_ID)
+    if message.channel == server.get_channel(681628374158147692):
+        if server.get_role(681628171778785281) in message.author.roles:  # if author has the role
+            if 'braincells--' in message.content.lower() or 'braincells++' in message.content.lower():
+                if (time.time() - last_braincell) < 600 and message.author != spes:
+                    await message.channel.send('Give his braincells a break! Wait'
+                                               f' {600-int(time.time()-last_braincell)}'
+                                               ' seconds')
+                elif len(message.mentions) != 1 or message.mentions[0].id != USER_ID:
+                    await message.channel.send('Invalid mentions!')
+                else:
+                    with open('braincell_count', 'r') as f:
+                        count = int(f.read())
+                    print(f'Current Braincell Count: {count}')
+                    async with message.channel.typing():
+                        if 'braincells++' in message.content.lower():
+                            count = count + 1
+                        elif 'braincells--' in message.content.lower():
+                            count = count - 1
+                        await change_status(f"Braincell Counter: {count}")
+                        last_change = time.time()
+                    with open('braincell_count', 'w') as f:
+                        f.write(str(count))
+                    await message.channel.send('Braincell Counter successfully updated.')
     await bot.process_commands(message)
 
 
