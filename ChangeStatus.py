@@ -40,7 +40,7 @@ async def change_status(message):
     }
     status_str = json.dumps(status, separators=(',', ':'))
     # status_str = '{"custom_status":{"text":"' + message + '"}}'
-    print(status_str)
+    # print(status_str)
     async with aiohttp.ClientSession() as session:
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
                                        headers=headers,
