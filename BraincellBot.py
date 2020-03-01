@@ -5,8 +5,6 @@ import os
 import aiohttp
 import random
 
-
-
 from dotenv import load_dotenv
 from ChangeStatus import change_status
 from ChangePfp import change_pfp
@@ -20,7 +18,7 @@ BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
 client = discord.Client()
 
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
