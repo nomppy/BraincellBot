@@ -16,7 +16,6 @@ from discord.ext.commands.cooldowns import BucketType
 load_dotenv()
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
-client = discord.Client()
 
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 GUILD_ID = 585948652644859904
