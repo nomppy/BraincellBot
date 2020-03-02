@@ -12,6 +12,7 @@ from keep_alive import keep_alive
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
 
+
 load_dotenv()
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
