@@ -25,23 +25,25 @@ GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
 
-pfp_timer = 0  # off
+stop_timer = False
 
 
 @commands.command()
 @commands.is_owner()
-async def settings(ctx, *, module='display', lenience=300):
-    global pfp_timer
-    if module in ['display', 'show', 'list']:
-        await ctx.send(f'newpfp timer: {pfp_timer} (0 is off)')
-    if module.split()[:2] == ['newpfp', 'timer']:
-        pfp_timer = int(module.split()[2])
-        if pfp_timer == 0:
+async def pfptimer(ctx, op='display', timer=0, lenience=300):
+    global stop_timer
+    stop_timer = True
+    if op in ['display', 'show', 'list']:
+        await ctx.send(f'newpfp timer: {timer} (0 is off)')
+    elif op == 'set':
+        if timer == 0:
             await ctx.send('`b!newpfp` timer has been turned off.')
+            stop_timer = True
         else:
-            await ctx.send(f'`b!newpfp` is now set to trigger every {pfp_timer} (+- {lenience})seconds')
-            while pfp_timer != 0:
-                await asyncio.sleep(pfp_timer - lenience + random.randint(0, lenience*2))
+            stop_timer = False
+            await ctx.send(f'`b!newpfp` is now set to trigger every {timer} (+- {lenience})seconds')
+            while timer != 0 and not stop_timer:
+                await asyncio.sleep(timer - lenience + random.randint(0, lenience*2))
                 await newpfp(ctx)
 
 
@@ -101,7 +103,7 @@ async def meow(ctx):
 
 bot.add_command(newpfp)
 bot.add_command(alive)
-bot.add_command(settings)
+bot.add_command(pfptimer)
 
 
 @bot.event
