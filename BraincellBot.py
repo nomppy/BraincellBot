@@ -4,6 +4,7 @@ import time
 import os
 import aiohttp
 import random
+import firebase_admin
 
 from dotenv import load_dotenv
 from ChangeStatus import change_status
@@ -11,13 +12,24 @@ from ChangePfp import change_pfp
 from keep_alive import keep_alive
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
+from firebase_admin import firestore
+from firebase_admin import credentials
 
 
 load_dotenv()
+cred = credentials.Certificate(os.getenv('SERVICE_ACCOUNT'))
+firebase_admin.initialize_app(cred)
+
+db = firestore.client()
+users_ref = db.collection('users')
+docs = users_ref.stream()
+for doc in docs:
+    print(f'{doc.id} => {doc.to_dict()}')
+
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 GUILD_ID = 585948652644859904
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
