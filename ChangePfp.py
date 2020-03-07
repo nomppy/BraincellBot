@@ -31,16 +31,7 @@ async def change_pfp(img_link):
         'sec-fetch-site': 'same-origin',
         'sec-fetch-mode': 'cors',
         'sec-fetch-dest': 'empty',
-        'referer': 'https://discordapp.com/channels/@me',
-        'cookie': '__cfduid=d4185c519c0c003f171d470e8372045f81582145613; locale=en-GB; '
-                  '__cfruid=e6fb6661f362159e16facf1165ed63368e2de94b-1582851317',
-        'x-super-properties': 'eyJvcyI6IldpbmRvd3MiLCJicm93c2VyIjoiQ2hyb21lIiwiZGV2aWNlIjoiIiwiYnJvd3Nlcl91c2VyX2FnZW50'
-                              'IjoiTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChL'
-                              'SFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzgwLjAuMzk4Ny4xMjIgU2FmYXJpLzUzNy4zNiBFZGcvODAuMC4zNjEu'
-                              'NjIiLCJicm93c2VyX3ZlcnNpb24iOiI4MC4wLjM5ODcuMTIyIiwib3NfdmVyc2lvbiI6IjEwIiwicmVmZXJyZXIi'
-                              'OiIiLCJyZWZlcnJpbmdfZG9tYWluIjoiIiwicmVmZXJyZXJfY3VycmVudCI6IiIsInJlZmVycmluZ19kb21haW5f'
-                              'Y3VycmVudCI6IiIsInJlbGVhc2VfY2hhbm5lbCI6InN0YWJsZSIsImNsaWVudF9idWlsZF9udW1iZXIiOjU1MjM2'
-                              'LCJjbGllbnRfZXZlbnRfc291cmNlIjpudWxsfQ=='
+        'referer': 'https://discordapp.com/channels/@me'
     }
 
     async with aiohttp.ClientSession() as session:
