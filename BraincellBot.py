@@ -1,4 +1,6 @@
 import asyncio
+import pprint
+
 import discord
 import time
 import os
@@ -11,6 +13,7 @@ from ChangePfp import change_pfp
 from keep_alive import keep_alive
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
+from google.cloud import monitoring_v3
 
 
 load_dotenv()
@@ -23,6 +26,23 @@ USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
 
 stop_timer = False
+
+
+# automatically creating uptime pings to keep repl online
+def create_uptime_check_config(host_name, proj_name='projects/braincell-bot-dpy', display_name=None):
+    config = monitoring_v3.types.uptime_pb2.UptimeCheckConfig()
+    config.display_name = display_name or 'New uptime check'
+    config.monitored_resource.type = 'uptime_url'
+    config.monitored_resource.labels.update({'host': host_name})
+    config.http_check.path = '/'
+    config.http_check.port = 80
+    config.timeout.seconds = 10
+    config.period.seconds = 300
+
+    client = monitoring_v3.UptimeCheckServiceClient()
+    new_config = client.create_uptime_check_config(proj_name, config)
+    pprint.pprint(new_config)
+    return new_config
 
 
 @commands.command()
