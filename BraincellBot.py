@@ -28,6 +28,9 @@ ROLE_ID = 681628171778785281
 stop_timer = False
 
 
+# TODO write server code to receive register requests
+# TODO server code to write to database 
+
 # automatically creating uptime pings to keep repl online
 def create_uptime_check_config(host_name, proj_name='projects/braincell-bot-dpy', display_name=None):
     config = monitoring_v3.types.uptime_pb2.UptimeCheckConfig()
@@ -81,11 +84,12 @@ async def alive_error(ctx, err):
 @commands.is_owner()
 async def newpfp(ctx, arg='random'):
     async with ctx.typing():
-        img_link = await get_cat_link()
         if arg[-3:] in ['jpg', 'png']:
             img_link = arg
         elif len(ctx.message.attachments) == 1:
             img_link = ctx.message.attachments[0].url
+        else:
+            img_link = await get_cat_link()
         # print(img_link)
         status = await change_pfp(img_link)
     await ctx.send(status)
