@@ -1,21 +1,22 @@
-import time
+import importlib
 import os
 import random
+import sys
+import time
 
-from dotenv import load_dotenv
-from keep_alive import keep_alive
 from discord.ext import commands
 from discord.ext.commands.cooldowns import BucketType
-from google.cloud import monitoring_v3
-import firebase_admin
-from firebase_admin import auth
+from dotenv import load_dotenv
+
+from Core import change_status
+from keep_alive import keep_alive
 
 load_dotenv()
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
 
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-GUILD_ID = 585948652644859904
+BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+GUILD_ID = 671052553705750580
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
 
@@ -28,25 +29,17 @@ stop_timer = False
 
 
 @commands.command()
-@commands.cooldown(1, 3, BucketType.member)
-async def alive(ctx):
-    resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(', 'We\'re all gonna die anyway']
-    await ctx.send(resp[random.randint(0, len(resp) - 1)])
+@commands.is_owner()
+async def reload(ctx, command):
+    # bot.reload_extension(command)
+    # await ctx.send('Reloaded ' + command)
+    importlib.reload(sys.modules[command])
+    await ctx.send(f'Reloaded {command}')
 
 
-@alive.error
-async def alive_error(ctx):
-    await ctx.send('This command is on cooldown, but I guess I must be alive!')
-
-
-bot.add_command(alive)
-
-# set and load all extensions
-extensions = ['cogs.UptimeCheck',
-              'cogs.Core']
-if __name__ == '__main__':
-    for ext in extensions:
-        bot.load_extension(ext)
+@reload.error
+async def reload_error(ctx, err):
+    await ctx.send('What to reload?')
 
 
 @bot.event
@@ -55,11 +48,20 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    # set and load all extensions
+    extensions = ['cogs.UptimeCheck',
+                  'cogs.Core',
+                  'cogs.Misc']
+    if __name__ == '__main__':
+        for ext in extensions:
+            bot.load_extension(ext)
+            print(f'Loaded {ext}')
 
 
 last_braincell = time.mktime(time.gmtime(0))
 last_meow = time.mktime(time.gmtime(0))
 just_tried = False
+bot.add_command(reload)
 
 
 @bot.event

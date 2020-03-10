@@ -1,5 +1,6 @@
 import json
 import aiohttp
+from discord.ext import commands
 from dotenv import load_dotenv
 import os
 import base64
@@ -61,6 +62,7 @@ async def change_status(message):
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
                                        headers=headers,
                                        data=status)
+        return response
 
 
 async def get_cat_link():
