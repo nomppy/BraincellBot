@@ -1,6 +1,4 @@
-import importlib
 import os
-import sys
 import time
 
 from discord.ext import commands
@@ -21,13 +19,12 @@ ROLE_ID = 681628171778785281
 
 # TODO write server code to receive register requests
 # TODO server code to write to database
-# TODO migrate to cogs
+# TODO replace messages with embeds
 
 
 @commands.command()
 @commands.is_owner()
 async def reload(ctx, module):
-    # importlib.reload(sys.modules[module])
     bot.reload_extension(f'commands.{module}')
     await ctx.send(f'Reloaded {module}')
 
