@@ -28,3 +28,7 @@ async def _new_avatar(ctx, arg):
     # print(img_link)
     result = await change_avatar(img_link)
     return result
+
+
+def setup(bot):
+    bot.add_command(newpfp)

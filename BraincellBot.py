@@ -1,11 +1,9 @@
 import importlib
 import os
-import random
 import sys
 import time
 
 from discord.ext import commands
-from discord.ext.commands.cooldowns import BucketType
 from dotenv import load_dotenv
 
 from Core import change_status
@@ -29,7 +27,8 @@ ROLE_ID = 681628171778785281
 @commands.command()
 @commands.is_owner()
 async def reload(ctx, module):
-    importlib.reload(sys.modules[module])
+    # importlib.reload(sys.modules[module])
+    bot.reload_extension(f'commands.{module}')
     await ctx.send(f'Reloaded {module}')
 
 
@@ -45,12 +44,11 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     # load all commands
-    if __name__ == '__main__':
-        dir = './commands/'
-        for file in os.listdir(dir):
-            if file.endswith('.py'):
-                # does this work or do I need to import those files first?
-                bot.add_command(file.split('.')[0])
+    d = './commands/'
+    for file in os.listdir(d):
+        if file.endswith('.py'):
+            bot.load_extension('commands.' + file.split('.')[0])
+            print(f"Loaded {file.split('.')[0]}")
 
 
 last_braincell = time.mktime(time.gmtime(0))
