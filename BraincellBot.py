@@ -11,7 +11,7 @@ load_dotenv()
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix='b!')
 
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 GUILD_ID = 671052553705750580
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
