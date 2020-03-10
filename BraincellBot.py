@@ -20,8 +20,6 @@ GUILD_ID = 671052553705750580
 USER_ID = 179701226995318785
 ROLE_ID = 681628171778785281
 
-stop_timer = False
-
 
 # TODO write server code to receive register requests
 # TODO server code to write to database
@@ -30,16 +28,14 @@ stop_timer = False
 
 @commands.command()
 @commands.is_owner()
-async def reload(ctx, command):
-    # bot.reload_extension(command)
-    # await ctx.send('Reloaded ' + command)
-    importlib.reload(sys.modules[command])
-    await ctx.send(f'Reloaded {command}')
+async def reload(ctx, module):
+    importlib.reload(sys.modules[module])
+    await ctx.send(f'Reloaded {module}')
 
 
 @reload.error
 async def reload_error(ctx, err):
-    await ctx.send('What to reload?')
+    await ctx.send(err)
 
 
 @bot.event
@@ -48,14 +44,13 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    # set and load all extensions
-    extensions = ['cogs.UptimeCheck',
-                  'cogs.Core',
-                  'cogs.Misc']
+    # load all commands
     if __name__ == '__main__':
-        for ext in extensions:
-            bot.load_extension(ext)
-            print(f'Loaded {ext}')
+        dir = './commands/'
+        for file in os.listdir(dir):
+            if file.endswith('.py'):
+                # does this work or do I need to import those files first?
+                bot.add_command(file.split('.')[0])
 
 
 last_braincell = time.mktime(time.gmtime(0))

@@ -1,17 +1,21 @@
 from discord.ext import commands
+from Core import get_cat_link
+from Core import change_avatar
 
 
 @commands.command()
-async def newpfp(self, ctx, arg='random'):
+async def newpfp(ctx, arg='random'):
     async with ctx.typing():
-        result = await new_avatar(ctx, arg)
+        result = await _new_avatar(ctx, arg)
         await ctx.send(result)
 
+
 @newpfp.error
-async def newpfp_error(self, ctx, err):
+async def newpfp_error(ctx, err):
     await ctx.send(err)
 
-async def new_avatar(ctx, arg):
+
+async def _new_avatar(ctx, arg):
     if arg[-3:] in ['jpg', 'png']:
         img_link = arg
     elif len(ctx.message.attachments) == 1:
