@@ -3,8 +3,10 @@ import time
 
 from discord.ext import commands
 from dotenv import load_dotenv
+import importlib
 
-from Core import change_status
+from mods import admin
+from mods.core import change_status
 from keep_alive import keep_alive
 
 load_dotenv()
@@ -24,14 +26,40 @@ ROLE_ID = 681628171778785281
 
 @commands.command()
 @commands.is_owner()
-async def reload(ctx, module):
-    bot.reload_extension(f'commands.{module}')
-    await ctx.send(f'Reloaded {module}')
+async def reload(ctx, modext=None):
+    if modext in ['-a', 'all', '--all']:
+        await ctx.send(admin.reload_all(bot, mods))
+    elif modext in mods:
+        mods[modext] = importlib.reload(mods[modext])
+        await ctx.send(f'Reloaded module: {modext}')
+    elif f'exts.{modext}' in bot.extensions:
+        bot.reload_extension(f'exts.{modext}')
+        await ctx.send(f'Reloaded extension: {modext}')
+    elif not modext:
+        await ctx.send(mods)
+        await ctx.send(bot.extensions)
 
 
-@reload.error
-async def reload_error(ctx, err):
-    await ctx.send(err)
+@commands.command()
+@commands.is_owner()
+async def load(ctx, modext=None):
+    try:
+        mods[modext] = importlib.import_module(f'mods.{modext}')
+        await ctx.send(f'Loaded module: {modext}')
+    except ModuleNotFoundError:
+        try:
+            bot.load_extension(f'exts.{modext}')
+            await ctx.send(f'Loaded extension: {modext}')
+        except commands.ExtensionAlreadyLoaded:
+            await ctx.send(f'Extension **{modext}** already loaded')
+        except commands.ExtensionNotFound:
+            await ctx.send(f'Module/extension does not exist')
+
+
+bot.add_command(reload)
+bot.add_command(load)
+mods = {}
+ignore = ['uptimecheck.py']  # ignore on loading phase; for debugging purposes
 
 
 @bot.event
@@ -40,18 +68,23 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    # load all commands
-    d = './commands/'
-    for file in os.listdir(d):
-        if file.endswith('.py'):
-            bot.load_extension('commands.' + file.split('.')[0])
-            print(f"Loaded {file.split('.')[0]}")
+    # load all commands/cogs
+    for file in os.listdir('./exts/'):
+        if file.endswith('.py') and file not in ignore:
+            ext = file.split('.')[0]
+            bot.load_extension(f'exts.{ext}')
+            print(f"Loaded command: {ext}")
+    # load all non-command functions
+    for file in os.listdir('./mods/'):
+        if file.endswith('.py') and file not in ignore:
+            mod = file.split('.')[0]
+            mods[mod] = importlib.import_module(f'mods.{mod}')
+            print(f"Loaded module: {mod}")
 
 
 last_braincell = time.mktime(time.gmtime(0))
 last_meow = time.mktime(time.gmtime(0))
 just_tried = False
-bot.add_command(reload)
 
 
 @bot.event
