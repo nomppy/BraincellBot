@@ -1,7 +1,5 @@
 import importlib
 
-from discord.ext import commands
-
 
 async def reload_all(bot, mods):
     queue_mods = []
@@ -24,19 +22,13 @@ async def reload_load(modext, mods=None, bot=None):
             st = f'Reloaded module: **{modext}**'
         else:  # if module is not loaded
             mod = await _load_mod(modext)  # tries to load module
-            st = f'Loaded modules: **{modext}**'
-            if not mod:
-                st = f'Module **{modext}** not found'
-                raise ModuleNotFoundError
-        st = f'Reloaded module: **{modext}**'
+            st = f'Loaded module: **{modext}**'
         return mod, st
     if bot:
         if f'exts.{modext}' in bot.extensions:
             st = await _reload_ext(bot, modext)
         else:
             st = await _load_ext(bot, modext)
-            if not st:
-                raise commands.ExtensionNotFound('')
         return st
     return 'Must provide either mod or bot'
 
@@ -52,16 +44,10 @@ async def _reload_mod(mod):
 
 
 async def _load_ext(bot, ext):
-    try:
-        bot.load_extension(f'exts.{ext}')
-        return f'Loaded extension: {ext}'
-    except commands.ExtensionNotFound:
-        return None
+    bot.load_extension(f'exts.{ext}')
+    return f'Loaded extension: {ext}'
 
 
 async def _load_mod(mod):
-    try:
-        mod = importlib.import_module(f'mods.{mod}')
-        return mod
-    except ModuleNotFoundError:
-        return None
+    mod = importlib.import_module(f'mods.{mod}')
+    return mod
