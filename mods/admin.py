@@ -17,41 +17,38 @@ async def reload_all(bot, mods):
     return 'Reloaded all extension/modules.'
 
 
-async def reload_load(modext, bot=None):
-    st = ''
-    if not bot:  # looking for a module
-        mod = await _reload_mod(modext)
-        if not mod:  # if module is not loaded
+async def reload_load(modext, mods=None, bot=None):
+    if mods:  # looking for a module
+        if modext in mods:
+            mod = await _reload_mod(mods[modext])
+            st = f'Reloaded module: **{modext}**'
+        else:  # if module is not loaded
             mod = await _load_mod(modext)  # tries to load module
             st = f'Loaded modules: **{modext}**'
             if not mod:
                 st = f'Module **{modext}** not found'
                 raise ModuleNotFoundError
-        st = f'Reloaded modules: **{modext}**'
+        st = f'Reloaded module: **{modext}**'
         return mod, st
-    else:
-        st = await _reload_ext(bot, modext)
-        if not st:
+    if bot:
+        if f'exts.{modext}' in bot.extensions:
+            st = await _reload_ext(bot, modext)
+        else:
             st = await _load_ext(bot, modext)
             if not st:
-                raise commands.ExtensionNotFound
+                raise commands.ExtensionNotFound('')
         return st
+    return 'Must provide either mod or bot'
 
 
 async def _reload_ext(bot, ext):
-    try:
-        bot.reload_extension(ext)
-        return f'Reloaded extension: **{ext}**'
-    except commands.ExtensionNotLoaded:
-        return None
+    bot.reload_extension(f'exts.{ext}')
+    return f'Reloaded extension: **{ext}**'
 
 
 async def _reload_mod(mod):
-    try:
-        mod = importlib.reload(f'mods.{mod}')
-        return mod
-    except ModuleNotFoundError:
-        return None
+    mod = importlib.reload(mod)
+    return mod
 
 
 async def _load_ext(bot, ext):
@@ -64,7 +61,7 @@ async def _load_ext(bot, ext):
 
 async def _load_mod(mod):
     try:
-        _ = importlib.import_module(f'mods.{mod}')
-        return _
+        mod = importlib.import_module(f'mods.{mod}')
+        return mod
     except ModuleNotFoundError:
         return None
