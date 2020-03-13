@@ -30,17 +30,17 @@ async def reload(ctx, modext=None):
     if modext in ['-a', 'all', '--all']:
         st = await admin.reload_all(bot, mods)
     elif not modext:
-        st = 'List of modules/extentions'
+        st = 'TODO: send list of modules/extensions here'
     else:
         try:
-            mods[modext], st = await admin.reload_load(modext)
+            mods[modext], st = await admin.reload_load(modext, mods=mods)
         except ModuleNotFoundError:
             try:
-                st = await admin.reload_load(modext, bot)
+                st = await admin.reload_load(modext, bot=bot)
             except commands.ExtensionNotFound:
                 st = f'Cannot find {modext}'
 
-    ctx.send(st)
+    await ctx.send(st)
 
 bot.add_command(reload)
 mods = {}
