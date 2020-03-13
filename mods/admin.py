@@ -1,5 +1,7 @@
 import importlib
 
+from discord.ext import commands
+
 
 async def reload_all(bot, mods):
     queue_mods = []
@@ -13,3 +15,19 @@ async def reload_all(bot, mods):
     for ext in queue_exts:
         bot.reload_extension(ext)
     return 'Reloaded all extension/modules.'
+
+
+async def _reload_ext(bot, ext):
+    try:
+        bot.reload_extension(ext)
+    except commands.ExtensionNotLoaded:
+        bot.load_extension(ext)
+
+
+async def _reload_mod(mod):
+    try:
+        importlib.reload(f'mods.{mod}')
+    except ModuleNotFoundError:
+        return 'Module not found.'
+    except ImportError as e:
+        return f'Import error {e}'
