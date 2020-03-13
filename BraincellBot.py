@@ -43,17 +43,10 @@ async def reload(ctx, modext=None):
 @commands.command()
 @commands.is_owner()
 async def load(ctx, modext=None):
-    try:
-        mods[modext] = importlib.import_module(f'mods.{modext}')
-        await ctx.send(f'Loaded module: {modext}')
-    except ModuleNotFoundError:
-        try:
-            bot.load_extension(f'exts.{modext}')
-            await ctx.send(f'Loaded extension: {modext}')
-        except commands.ExtensionAlreadyLoaded:
-            await ctx.send(f'Extension **{modext}** already loaded')
-        except commands.ExtensionNotFound:
-            await ctx.send(f'Module/extension does not exist')
+    mods[modext], st = admin.load(modext)
+    if not mods[modext]:
+        st = admin.load(modext, bot)
+    ctx.send(st)
 
 
 bot.add_command(reload)
