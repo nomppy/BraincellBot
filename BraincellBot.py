@@ -28,29 +28,21 @@ ROLE_ID = 681628171778785281
 @commands.is_owner()
 async def reload(ctx, modext=None):
     if modext in ['-a', 'all', '--all']:
-        await ctx.send(admin.reload_all(bot, mods))
-    elif modext in mods:
-        mods[modext] = importlib.reload(mods[modext])
-        await ctx.send(f'Reloaded module: {modext}')
-    elif f'exts.{modext}' in bot.extensions:
-        bot.reload_extension(f'exts.{modext}')
-        await ctx.send(f'Reloaded extension: {modext}')
+        st = await admin.reload_all(bot, mods)
     elif not modext:
-        await ctx.send(mods)
-        await ctx.send(bot.extensions)
+        st = 'List of modules/extentions'
+    else:
+        try:
+            mods[modext], st = await admin.reload_load(modext)
+        except ModuleNotFoundError:
+            try:
+                st = await admin.reload_load(modext, bot)
+            except commands.ExtensionNotFound:
+                st = f'Cannot find {modext}'
 
-
-@commands.command()
-@commands.is_owner()
-async def load(ctx, modext=None):
-    mods[modext], st = admin.load(modext)
-    if not mods[modext]:
-        st = admin.load(modext, bot)
     ctx.send(st)
 
-
 bot.add_command(reload)
-bot.add_command(load)
 mods = {}
 ignore = ['uptimecheck.py']  # ignore on loading phase; for debugging purposes
 
