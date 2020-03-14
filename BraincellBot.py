@@ -1,10 +1,13 @@
 import os
+import re
 import time
 
 from discord.ext import commands
 from dotenv import load_dotenv
+import importlib
 
-from Core import change_status
+from mods import admin
+from mods.core import change_status
 from keep_alive import keep_alive
 
 load_dotenv()
@@ -24,14 +27,25 @@ ROLE_ID = 681628171778785281
 
 @commands.command()
 @commands.is_owner()
-async def reload(ctx, module):
-    bot.reload_extension(f'commands.{module}')
-    await ctx.send(f'Reloaded {module}')
+async def reload(ctx, modext=None):
+    if modext in ['-a', 'all', '--all']:
+        st = await admin.reload_all(bot, mods)
+    elif not modext:
+        st = 'TODO: send list of modules/extensions here'
+    else:
+        try:
+            mods[modext], st = await admin.reload_load(modext, mods=mods)
+        except ModuleNotFoundError:
+            try:
+                st = await admin.reload_load(modext, bot=bot)
+            except commands.ExtensionNotFound:
+                st = f'Cannot find {modext}'
 
+    await ctx.send(st)
 
-@reload.error
-async def reload_error(ctx, err):
-    await ctx.send(err)
+bot.add_command(reload)
+mods = {}
+ignore = ['uptimecheck.py', 'register.py', 'firestore.py']  # ignore on loading phase; for debugging purposes
 
 
 @bot.event
@@ -40,22 +54,31 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    # load all commands
-    d = './commands/'
-    for file in os.listdir(d):
-        if file.endswith('.py'):
-            bot.load_extension('commands.' + file.split('.')[0])
-            print(f"Loaded {file.split('.')[0]}")
+    # load all commands/cogs
+    for file in os.listdir('./exts/'):
+        if file.endswith('.py') and file not in ignore:
+            ext = file.split('.')[0]
+            bot.load_extension(f'exts.{ext}')
+            print(f"Loaded command: {ext}")
+    # load all non-command functions
+    for file in os.listdir('./mods/'):
+        if file.endswith('.py') and file not in ignore:
+            mod = file.split('.')[0]
+            mods[mod] = importlib.import_module(f'mods.{mod}')
+            print(f"Loaded module: {mod}")
 
 
 last_braincell = time.mktime(time.gmtime(0))
 last_meow = time.mktime(time.gmtime(0))
 just_tried = False
-bot.add_command(reload)
 
 
 @bot.event
 async def on_message(message):
+    if message.author.bot:
+        return -1
+    if re.match(rf"^<@!?{bot.user.id}>$", message.content):
+        await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{bot.command_prefix}**')
     global last_braincell
     global last_meow
     global just_tried

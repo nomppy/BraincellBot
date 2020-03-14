@@ -1,6 +1,6 @@
 from discord.ext import commands
-from Core import get_cat_link
-from Core import change_avatar
+from mods.core import get_cat_link
+from mods.core import change_avatar
 
 
 @commands.command()

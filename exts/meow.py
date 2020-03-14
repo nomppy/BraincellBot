@@ -1,6 +1,6 @@
 import discord
 
-from Core import get_cat_link
+from mods.core import get_cat_link
 from discord.ext import commands
 
 
