@@ -1,4 +1,5 @@
 import os
+import re
 import time
 
 from discord.ext import commands
@@ -44,7 +45,7 @@ async def reload(ctx, modext=None):
 
 bot.add_command(reload)
 mods = {}
-ignore = ['uptimecheck.py']  # ignore on loading phase; for debugging purposes
+ignore = ['uptimecheck.py', 'register.py', 'firestore.py']  # ignore on loading phase; for debugging purposes
 
 
 @bot.event
@@ -74,6 +75,10 @@ just_tried = False
 
 @bot.event
 async def on_message(message):
+    if message.author.bot:
+        return -1
+    if re.match(rf"^<@!?{bot.user.id}>$", message.content):
+        await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{bot.command_prefix}**')
     global last_braincell
     global last_meow
     global just_tried
