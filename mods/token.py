@@ -1,8 +1,12 @@
+import json
+import os
+
 import firebase_admin
 from firebase_admin import auth
 
 
-app = firebase_admin.initialize_app()
+cred = firebase_admin.credentials.Certificate(json.loads(os.getenv('GOOGLE_CRED')))
+app = firebase_admin.initialize_app(cred, name='auth')
 
 
 def create_custom_token(uid):
