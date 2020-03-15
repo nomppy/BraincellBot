@@ -9,9 +9,13 @@ def update_field(ref, field, value):
     ref.update({field: value})
 
 
+try:
+    app = firebase_admin.get_app('firestore')
+except ValueError:
+    cred = firebase_admin.credentials.Certificate(json.loads(os.getenv('GOOGLE_CRED')))
+    app = firebase_admin.initialize_app(cred, name='firestore')
+
 project_id = 'projects/braincell-bot-dpy'
-cred = firebase_admin.credentials.Certificate(json.loads(os.getenv('GOOGLE_CRED')))
-app = firebase_admin.initialize_app(cred, name='firestore')
 db = firestore.client(app)
 
 
