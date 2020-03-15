@@ -45,7 +45,7 @@ async def reload(ctx, modext=None):
 
 bot.add_command(reload)
 mods = {}
-ignore = ['uptimecheck.py', 'register.py', 'firestore.py']  # ignore on loading phase; for debugging purposes
+ignore = ['uptimecheck.py']  # ignore on loading phase; for debugging purposes
 
 
 @bot.event

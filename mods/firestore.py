@@ -1,3 +1,6 @@
+import os
+import json
+
 import firebase_admin
 from firebase_admin import firestore
 
@@ -7,7 +10,8 @@ def update_field(ref, field, value):
 
 
 project_id = 'projects/braincell-bot-dpy'
-app = firebase_admin.initialize_app({'projectId': project_id})
+cred = firebase_admin.credentials.Certificate(json.loads(os.getenv('GOOGLE_CRED')))
+app = firebase_admin.initialize_app(cred, name='firestore')
 db = firestore.client(app)
 
 

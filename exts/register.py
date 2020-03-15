@@ -35,3 +35,6 @@ class Register(commands.Cog):
             firestore.add_user(user.id, self_hosting=False, token=token_, email=email, pwd=pwd)
             await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is `b!`')
 
+
+def setup(bot):
+    bot.add_cog(Register(bot))
