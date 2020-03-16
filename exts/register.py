@@ -24,14 +24,14 @@ class Register(commands.Cog):
             def dm_reply(m):
                 return m.guild is None and m.author == user
 
-            await user.send('Hello! Please reply with either the required information or with `self` to self-host')
-            await user.send('Please start with your token:')
+            await user.send('Hello! Please reply with either the required information or with `self` to self-host\n'
+                            'Please start with your token:')
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
             if resp.content == 'self':
-                await user.send('Alright, head here and follow the instructions to get started: '
-                                'https://repl.it/@kenhtsun/BraincellBot-Client')
                 custom_token = token.create_custom_token(str(ctx.author.id)).decode('utf-8')
-                await user.send(f'Your unique token is ```{custom_token}```. Keep this token safe!')
+                await user.send('Alright, head here and follow the instructions to get started: '
+                                'https://repl.it/@kenhtsun/BraincellBot-Client'
+                                'Your unique token is ```{custom_token}```. Keep this token safe!')
                 firestore.add_user(user.id, self_hosting=True, token=custom_token)
             else:
                 token_ = resp
