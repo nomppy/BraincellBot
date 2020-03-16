@@ -3,9 +3,54 @@ from mods import token
 from mods import firestore
 
 
+async def _self_host(uid: str):
+    custom_token = token.create_custom_token(uid).decode('utf-8')
+    firestore.add_user(uid, True, custom_token)
+    return 'Alright, head here and follow the instructions to get started:  ' \
+           'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
+           f'Your unique token is ```{custom_token}```. ' \
+           'Keep this token safe! '
+
+
 class Register(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def _get_user_reply(self, user):
+        def dm_reply(m):
+            return m.guild is None and m.author == user
+
+        resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
+        return resp
+
+    async def _get_user_token(self, user):
+        # TODO check if entered token is plausible
+        user.send('Enter your discord token here, your token is required for the bot to change your status message.\n'
+                  'So you can enter `none` if you dont want that function.')
+        resp = await self._get_user_reply(user)
+        if resp in ['none', 'None']:
+            return None
+        else:
+            return resp
+
+    async def _get_user_email(self, user):
+        # TODO same thing here, use regex to see if it's a valid email
+        user.send('Enter the email you used to sign up for discord, this is needed to change your avatar\n'
+                  'You can also enter `none` if you want to opt-out.')
+        resp = await self._get_user_reply(user)
+        if resp in ['none', 'None']:
+            return None
+        else:
+            return resp
+
+    async def _get_user_pwd(self, user):
+        user.send('Finally, enter your discord password, this is also needed to change your avatar\n'
+                  'As always, enter `none` if you want')
+        resp = await self._get_user_reply(user)
+        if resp in ['none', 'None']:
+            return None
+        else:
+            return resp
 
     @commands.command()
     @commands.is_owner()
@@ -15,11 +60,23 @@ class Register(commands.Cog):
 
         user = ctx.author
         if token.token_exists(user.id):
-            await ctx.send('You\'re already registered, dming you your token')
-            user_token = firestore.get_user_token(user.id)
-            await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
-                            f'Did you want to revoke or regenerate your token? Use revoke & refresh')
-            # TODO user react to delete message
+            self_ = firestore.self_hosting(user.id)
+            if self_:
+                await ctx.send('You\'re already registered, dming you your token')
+                user_token = firestore.get_user_token(user.id)
+                await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
+                                f'Did you want to revoke or regenerate your token? Use revoke & refresh')
+                # TODO user react to delete message
+            else:
+                await ctx.send('I already have your token, but I\'send it to you if you want to verify')
+                await user.send(f'Here\'s your discord token, according to the information you entered.\n'
+                                f'If you wish to change it just enter it right now or enter `self` to switch'
+                                f'to self hosting')
+                resp = await self._get_user_token(user)
+                if resp == 'self':
+                    await user.send(_self_host(str(user.id)))
+                else:
+                    firestore.update_user(str(user.id), False, new_token=resp)
         else:
             def dm_reply(m):
                 return m.guild is None and m.author == user
@@ -28,19 +85,17 @@ class Register(commands.Cog):
                             'Please start with your token:')
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
             if resp.content == 'self':
-                custom_token = token.create_custom_token(str(ctx.author.id)).decode('utf-8')
-                await user.send('Alright, head here and follow the instructions to get started: '
-                                'https://repl.it/@kenhtsun/BraincellBot-Client'
-                                'Your unique token is ```{custom_token}```. Keep this token safe!')
-                firestore.add_user(user.id, self_hosting=True, token=custom_token)
+                await user.send(_self_host(str(user.id)))
             else:
                 token_ = resp
-                await user.send('Now enter your discord email, or react to skip')
-                email = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
-                await user.send('And finally your password...')
-                pwd = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
-                firestore.add_user(user.id, self_hosting=False, token=token_, email=email, pwd=pwd)
-                await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is `b!`')
+                email = self._get_user_email(user)
+                pwd = self._get_user_pwd(user)
+                firestore.add_user(user.id, self_=False, token=token_, email=email, pwd=pwd)
+                await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
+                                '`b!`\n '
+                                'If at anytime you need to change the information you entered or switch to '
+                                'self-hosting, '
+                                'just run register again')
 
 
 def setup(bot):
