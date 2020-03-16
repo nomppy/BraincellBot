@@ -25,10 +25,3 @@ def refresh_custom_token(uid):
 
 def revoke_refresh_tokens(uid):
     auth.revoke_refresh_tokens(uid, app=app)
-
-
-def token_exists(uid: str):
-    token = firestore.get_user(uid)['token']
-    return token is not None
-
-

@@ -8,7 +8,7 @@ async def _self_host(uid: str):
     firestore.add_user(uid, True, custom_token)
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
-           f'Your unique token is ```{custom_token}```. ' \
+           f'Your unique token is ```{custom_token}```' \
            'Keep this token safe! '
 
 
@@ -53,14 +53,13 @@ class Register(commands.Cog):
             return resp
 
     @commands.command()
-    @commands.is_owner()
     async def register(self, ctx):
         if ctx.author.bot:
             return -1
 
         user = ctx.author
         uid = str(user.id)
-        if token.token_exists(uid):
+        try:
             self_ = firestore.get_user(uid)['self']
             if self_:
                 await ctx.send('You\'re already registered, dming you your token')
@@ -73,7 +72,7 @@ class Register(commands.Cog):
                 await ctx.send(':cathink: You\'re already registered, sliding into your dms in case you want'
                                'to change anything.')
 
-                def _send_current_info(_uid):
+                async def _send_current_info(_uid):
                     _token = firestore.get_user(_uid)['token']
                     _email = firestore.get_user(_uid)['email']
                     _pwd = firestore.get_user(_uid)['pwd']
@@ -85,8 +84,8 @@ class Register(commands.Cog):
                                     f'Self-hosting: {_self}\n'
                                     f'If you want to change any of those just type the corresponding field')
                 
-                def _complete_user_info(_uid):
-                    _send_current_info(uid)
+                async def _complete_user_info(_uid):
+                    await _send_current_info(uid)
                     resp_ = await self._get_user_reply(user)
                     if resp_.lower() == 'self':
                         await user.send(await _self_host(uid))
@@ -99,9 +98,9 @@ class Register(commands.Cog):
                     elif resp_.lower() in ['pwd', 'password']:
                         new_pwd = await self._get_user_pwd(user)
                         firestore.update_user(uid, False, new_pwd=new_pwd)
-                    _complete_user_info(uid)
+                    await _complete_user_info(uid)
 
-        else:
+        except TypeError:
             def dm_reply(m):
                 return m.guild is None and m.author == user
 
@@ -109,7 +108,7 @@ class Register(commands.Cog):
                             'Please start with your token:')
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
             if resp.content == 'self':
-                await user.send(_self_host(uid))
+                await user.send(await _self_host(uid))
             else:
                 token_ = resp
                 email = self._get_user_email(user)
