@@ -5,18 +5,30 @@ import firebase_admin
 from firebase_admin import firestore
 
 
-def update_field(ref, field, value):
-    ref.update({field: value})
-
-
 try:
     app = firebase_admin.get_app('firestore')
 except ValueError:
     cred = firebase_admin.credentials.Certificate(json.loads(os.getenv('GOOGLE_CRED')))
     app = firebase_admin.initialize_app(cred, name='firestore')
 
-project_id = 'projects/braincell-bot-dpy'
 db = firestore.client(app)
+
+
+def update_field(ref, field, value):
+    ref.update({field: value})
+
+
+def _get_doc(path):
+    ref = db.document(path)
+    return ref.get().to_dict()
+
+
+def _get_user(uid):
+    return _get_doc(f'users/{uid}')
+
+
+def get_user_token(uid):
+    return _get_user(uid)['token']
 
 
 def _write(path, data, merge=True):

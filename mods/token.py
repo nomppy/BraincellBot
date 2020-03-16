@@ -3,6 +3,7 @@ import os
 
 import firebase_admin
 from firebase_admin import auth
+from mods import firestore
 
 
 try:
@@ -20,3 +21,14 @@ def create_custom_token(uid: str):
 def refresh_custom_token(uid):
     auth.revoke_refresh_tokens(uid, app=app)
     return create_custom_token(uid)
+
+
+def revoke_refresh_tokens(uid):
+    auth.revoke_refresh_tokens(uid, app=app)
+
+
+def token_exists(uid: str):
+    token = firestore.get_user_token(uid)
+    return token is not None
+
+
