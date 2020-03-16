@@ -5,6 +5,8 @@ from mods.core import change_avatar
 
 @commands.command()
 async def newpfp(ctx, arg='random'):
+    if ctx.author.bot:
+        return
     async with ctx.typing():
         result = await _new_avatar(ctx, arg)
         await ctx.send(result)

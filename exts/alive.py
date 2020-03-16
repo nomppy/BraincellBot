@@ -4,6 +4,8 @@ from discord.ext import commands
 
 @commands.command()
 async def alive(ctx):
+    if ctx.author.bot:
+        return
     resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(',
             'We\'re all gonna die anyway',
             'What\'s the point?']
