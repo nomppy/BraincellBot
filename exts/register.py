@@ -68,6 +68,7 @@ class Register(commands.Cog):
                                 f'Did you want to revoke or regenerate your token? Use revoke & refresh')
                 # TODO user react to delete message
             else:
+                # TODO func to get uncompleted information, then request for those specifically
                 await ctx.send('I already have your token, but I\'send it to you if you want to verify')
                 await user.send(f'Here\'s your discord token, according to the information you entered.\n'
                                 f'If you wish to change it just enter it right now or enter `self` to switch'
