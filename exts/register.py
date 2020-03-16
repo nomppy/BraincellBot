@@ -55,7 +55,7 @@ class Register(commands.Cog):
     @commands.command()
     async def register(self, ctx):
         if ctx.author.bot:
-            return -1
+            return
 
         user = ctx.author
         uid = str(user.id)
