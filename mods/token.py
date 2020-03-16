@@ -28,7 +28,7 @@ def revoke_refresh_tokens(uid):
 
 
 def token_exists(uid: str):
-    token = firestore.get_user_token(uid)
+    token = firestore.get_user(uid)['token']
     return token is not None
 
 

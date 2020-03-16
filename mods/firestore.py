@@ -24,16 +24,8 @@ def _get_doc(path):
     return ref.get().to_dict()
 
 
-def _get_user(uid):
+def get_user(uid):
     return _get_doc(f'users/{uid}')
-
-
-def get_user_token(uid):
-    return _get_user(uid)['token']
-
-
-def self_hosting(uid):
-    return _get_user(uid)['self']
 
 
 def _write(path, data, merge=True):

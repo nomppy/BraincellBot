@@ -59,25 +59,48 @@ class Register(commands.Cog):
             return -1
 
         user = ctx.author
-        if token.token_exists(user.id):
-            self_ = firestore.self_hosting(user.id)
+        uid = str(user.id)
+        if token.token_exists(uid):
+            self_ = firestore.get_user(uid)['self']
             if self_:
                 await ctx.send('You\'re already registered, dming you your token')
-                user_token = firestore.get_user_token(user.id)
+                user_token = firestore.get_user(uid)['token']
                 await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
                                 f'Did you want to revoke or regenerate your token? Use revoke & refresh')
                 # TODO user react to delete message
             else:
                 # TODO func to get uncompleted information, then request for those specifically
-                await ctx.send('I already have your token, but I\'send it to you if you want to verify')
-                await user.send(f'Here\'s your discord token, according to the information you entered.\n'
-                                f'If you wish to change it just enter it right now or enter `self` to switch'
-                                f'to self hosting')
-                resp = await self._get_user_token(user)
-                if resp == 'self':
-                    await user.send(_self_host(str(user.id)))
-                else:
-                    firestore.update_user(str(user.id), False, new_token=resp)
+                await ctx.send(':cathink: You\'re already registered, sliding into your dms in case you want'
+                               'to change anything.')
+
+                def _send_current_info(_uid):
+                    _token = firestore.get_user(_uid)['token']
+                    _email = firestore.get_user(_uid)['email']
+                    _pwd = firestore.get_user(_uid)['pwd']
+                    _self = firestore.get_user(_uid)['self']
+                    await user.send(f'Here\'s what we have on file for you:\n'
+                                    f'Token: {_token}\n'
+                                    f'Email: {_email}\n'
+                                    f'Password: {_pwd}\n'
+                                    f'Self-hosting: {_self}\n'
+                                    f'If you want to change any of those just type the corresponding field')
+                
+                def _complete_user_info(_uid):
+                    _send_current_info(uid)
+                    resp_ = await self._get_user_reply(user)
+                    if resp_.lower() == 'self':
+                        await user.send(await _self_host(uid))
+                    elif resp_.lower() == 'token':
+                        new_token = await self._get_user_token(user)
+                        firestore.update_user(uid, False, new_token=new_token)
+                    elif resp_.lower() == 'email':
+                        new_email = await self._get_user_email(user)
+                        firestore.update_user(uid, False, new_email=new_email)
+                    elif resp_.lower() in ['pwd', 'password']:
+                        new_pwd = await self._get_user_pwd(user)
+                        firestore.update_user(uid, False, new_pwd=new_pwd)
+                    _complete_user_info(uid)
+
         else:
             def dm_reply(m):
                 return m.guild is None and m.author == user
@@ -86,12 +109,12 @@ class Register(commands.Cog):
                             'Please start with your token:')
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
             if resp.content == 'self':
-                await user.send(_self_host(str(user.id)))
+                await user.send(_self_host(uid))
             else:
                 token_ = resp
                 email = self._get_user_email(user)
                 pwd = self._get_user_pwd(user)
-                firestore.add_user(user.id, self_=False, token=token_, email=email, pwd=pwd)
+                firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
                 await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
                                 '`b!`\n '
                                 'If at anytime you need to change the information you entered or switch to '
