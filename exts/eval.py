@@ -8,13 +8,25 @@ import traceback
 from mods import admin
 
 
+def cleanup_code(content):
+    """Automatically removes code blocks from the code."""
+    # remove ```py\n```
+    if content.startswith('```') and content.endswith('```'):
+        return '\n'.join(content.split('\n')[1:-1])
+
+    # remove `foo`
+    return content.strip('` \n')
+
+
 class Eval(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self._last_result = None
 
-    @commands.command(name='eval')
-    async def eval_(self, ctx, *, body: str):
+    @commands.command(pass_context=True, hidden=True, name='eval')
+    async def _eval(self, ctx, *, body: str):
+        """Evaluates a code"""
+
         env = {
             'bot': self.bot,
             'ctx': ctx,
@@ -25,9 +37,9 @@ class Eval(commands.Cog):
             '_': self._last_result
         }
 
-        # env.update(globals())
+        env.update(globals())
 
-        body = admin.cleanup_code(body)
+        body = cleanup_code(body)
         stdout = io.StringIO()
 
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
