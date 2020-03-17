@@ -2,20 +2,28 @@ import importlib
 import os
 
 
+def cleanup_code(content):
+    if content.startswith('```') and content.endswith('```'):
+        return '\n'.join(content.split('\n')[1:-1])
+
+    return content.strip('` \n`')
+
+
 async def reload_all(bot, mods, ignore):
     # load all commands/cogs
     for file in os.listdir('./exts/'):
         if file.endswith('.py') and file not in ignore:
             ext = file.split('.')[0]
-            await reload_load(ext, bot=bot)
-            print(f"Loaded command: {ext}")
+            st = await reload_load(ext, bot=bot)
+            print(st)
     # load all non-command functions
     for file in os.listdir('./mods/'):
         if file.endswith('.py') and file not in ignore:
             mod = file.split('.')[0]
-            mods[mod] = await reload_load(mod, mods=mods)
-            print(f"Loaded module: {mod}")
-    return 'Reloaded all commands/extensions'
+            mod_, st = await reload_load(mod, mods=mods)
+            mods[mod] = mod_
+            print(st)
+    return 'Reloaded all mods/exts'
 
 
 async def reload_load(modext, mods=None, bot=None):
