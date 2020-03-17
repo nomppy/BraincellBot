@@ -29,7 +29,7 @@ ROLE_ID = 681628171778785281
 @commands.is_owner()
 async def reload(ctx, modext=None):
     if modext in ['-a', 'all', '--all']:
-        st = await admin.reload_all(bot, mods)
+        st = await admin.reload_all(bot, mods, ignore)
     elif not modext:
         st = 'TODO: send list of modules/extensions here'
     else:
@@ -54,18 +54,7 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    # load all commands/cogs
-    for file in os.listdir('./exts/'):
-        if file.endswith('.py') and file not in ignore:
-            ext = file.split('.')[0]
-            bot.load_extension(f'exts.{ext}')
-            print(f"Loaded command: {ext}")
-    # load all non-command functions
-    for file in os.listdir('./mods/'):
-        if file.endswith('.py') and file not in ignore:
-            mod = file.split('.')[0]
-            mods[mod] = importlib.import_module(f'mods.{mod}')
-            print(f"Loaded module: {mod}")
+    await admin.reload_all(bot, mods, ignore)
 
 
 last_braincell = time.mktime(time.gmtime(0))

@@ -1,11 +1,14 @@
 from discord.ext import commands
 from mods import token
+from mods import firestore
 
 
 @commands.command()
 async def refresh(ctx):
-    try:
+    token_ = token.create_custom_token(str(ctx.author.id)).decode('utf-8')
+    await ctx.author.send('Here\'s your freshly minted token!'
+                          f'```{token_}```')
 
-    ctx.send('Are you sure you want to refresh your custom token?\n'
-             'You will have to replace the token in your .env file.')
-    token_ = token.create_custom_token(ctx.author.id)
+
+def setup(bot):
+    bot.add_command(refresh)

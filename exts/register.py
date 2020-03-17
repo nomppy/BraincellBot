@@ -65,7 +65,9 @@ class Register(commands.Cog):
                 await ctx.send('You\'re already registered, dming you your token')
                 user_token = firestore.get_user(uid)['token']
                 await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
-                                f'Did you want to revoke or regenerate your token? Use revoke & refresh')
+                                f'Did you want to revoke or regenerate your token? Use revoke & refresh'
+                                f'If you want to switch to letting the bot manage everything for you, revoke '
+                                f'your token with revoke and do register again')
                 # TODO user react to delete message
             else:
                 # TODO func to get uncompleted information, then request for those specifically

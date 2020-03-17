@@ -74,3 +74,4 @@ def add_user(uid, self_, token=None, email=None, pwd=None):
         'self': self_
     }
     _write(path, data)
+
