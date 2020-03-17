@@ -6,6 +6,8 @@ import textwrap
 import traceback
 
 from mods import admin
+from mods import token
+from mods import firestore
 
 
 def cleanup_code(content):
@@ -24,6 +26,7 @@ class Eval(commands.Cog):
         self._last_result = None
 
     @commands.command(pass_context=True, hidden=True, name='eval')
+    @commands.is_owner()
     async def _eval(self, ctx, *, body: str):
         """Evaluates a code"""
 
@@ -34,7 +37,7 @@ class Eval(commands.Cog):
             'author': ctx.author,
             'guild': ctx.guild,
             'message': ctx.message,
-            '_': self._last_result
+            '_': self._last_result,
         }
 
         env.update(globals())

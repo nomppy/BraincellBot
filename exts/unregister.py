@@ -11,7 +11,7 @@ async def unregister(ctx):
     uid = str(user.id)
     try:
         token.delete_user(uid)
-        firestore.update_user(uid, self_=False)
+        firestore.update_user(uid, self_=False, new_token=None)
         await ctx.send('Your account has been deactivated.')
     except UserNotFoundError:
         await ctx.send('Your account couldn\'t be found.')
