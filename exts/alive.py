@@ -6,6 +6,7 @@ from discord.ext import commands
 async def alive(ctx):
     if ctx.author.bot:
         return
+    await ctx.send('hello')
     resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(',
             'We\'re all gonna die anyway',
             'What\'s the point?']

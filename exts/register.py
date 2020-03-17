@@ -20,49 +20,93 @@ class Register(commands.Cog):
         def dm_reply(m):
             return m.guild is None and m.author == user
 
-        resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
-        return resp
+        try:
+            resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
+        except TimeoutError:
+            return
+        return resp.content
 
     async def _get_user_token(self, user):
         # TODO check if entered token is plausible
-        user.send('Enter your discord token here, your token is required for the bot to change your status message.\n'
-                  'So you can enter `none` if you dont want that function.')
-        resp = await self._get_user_reply(user)
-        if resp in ['none', 'None']:
+        await user.send(
+            'Enter your discord token here, your token is required for the bot to change your status message.\n'
+            'So you can enter `none` if you dont want that function.')
+        try:
+            resp = await self._get_user_reply(user)
+        except TimeoutError:
+            return
+        if resp == 'none':
             return None
         else:
             return resp
 
     async def _get_user_email(self, user):
         # TODO same thing here, use regex to see if it's a valid email
-        user.send('Enter the email you used to sign up for discord, this is needed to change your avatar\n'
-                  'You can also enter `none` if you want to opt-out.')
-        resp = await self._get_user_reply(user)
-        if resp in ['none', 'None']:
+        await user.send('Enter the email you used to sign up for discord, this is needed to change your avatar\n'
+                        'You can also enter `none` if you want to opt-out.')
+        try:
+            resp = await self._get_user_reply(user)
+        except TimeoutError:
+            return
+        if resp.lower() == 'none':
             return None
         else:
             return resp
 
     async def _get_user_pwd(self, user):
-        user.send('Finally, enter your discord password, this is also needed to change your avatar\n'
-                  'As always, enter `none` if you want')
-        resp = await self._get_user_reply(user)
-        if resp in ['none', 'None']:
+        await user.send('Finally, enter your discord password, this is also needed to change your avatar\n'
+                        'As always, enter `none` if you want')
+        try:
+            resp = await self._get_user_reply(user)
+        except TimeoutError:
+            return
+        if resp.lower() == 'none':
             return None
         else:
             return resp
 
     @commands.command()
     async def register(self, ctx):
-        try:
-            if ctx.author.bot:
-                return
+        if ctx.author.bot:
+            return
 
-            user = ctx.author
-            uid = str(user.id)
-            try:
-                self_ = firestore.get_user(uid)['self']
-                if self_:
+        user = ctx.author
+        uid = str(user.id)
+
+        async def _send_current_info(_uid):
+            _token = firestore.get_user(_uid)['token']
+            _email = firestore.get_user(_uid)['email']
+            _pwd = firestore.get_user(_uid)['pwd']
+            _self = firestore.get_user(_uid)['self']
+            await user.send(f'Here\'s what we have on file for you:\n'
+                            f'Token: {_token}\n'
+                            f'Email: {_email}\n'
+                            f'Password: {_pwd}\n'
+                            f'Self-hosting: {_self}\n'
+                            f'If you want to change any of those just type the corresponding field')
+
+        async def _complete_user_info(_uid):
+            await _send_current_info(uid)
+            resp_ = await self._get_user_reply(user)
+            if resp_.lower() == 'self':
+                await user.send(await _self_host(uid))
+            elif resp_.lower() == 'token':
+                new_token = await self._get_user_token(user)
+                firestore.update_user(uid, False, new_token=new_token)
+            elif resp_.lower() == 'email':
+                new_email = await self._get_user_email(user)
+                firestore.update_user(uid, False, new_email=new_email)
+            elif resp_.lower() in ['pwd', 'password']:
+                new_pwd = await self._get_user_pwd(user)
+                firestore.update_user(uid, False, new_pwd=new_pwd)
+            await _complete_user_info(uid)
+
+        try:
+            user_ = firestore.get_user(uid)
+            token_ = user['token']
+            if user_:  # registered
+                self_ = user_['self']
+                if self_:  # self-hosting
                     await ctx.send('You\'re already registered, dming you your token')
                     user_token = firestore.get_user(uid)['token']
                     await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
@@ -70,60 +114,32 @@ class Register(commands.Cog):
                                     f'If you want to switch to letting the bot manage everything for you, revoke '
                                     f'your token with revoke and do register again')
                     # TODO user react to delete message
-                else:
-                    # TODO func to get uncompleted information, then request for those specifically
-                    await ctx.send(':cathink: You\'re already registered, sliding into your dms in case you want'
-                                   'to change anything.')
+                else:  # bot hosting
+                    await ctx.send('It says here that you\'re self-hosting, dming you the information I have on file')
+                    user.send(await _send_current_info(uid))
 
-                    async def _send_current_info(_uid):
-                        _token = firestore.get_user(_uid)['token']
-                        _email = firestore.get_user(_uid)['email']
-                        _pwd = firestore.get_user(_uid)['pwd']
-                        _self = firestore.get_user(_uid)['self']
-                        await user.send(f'Here\'s what we have on file for you:\n'
-                                        f'Token: {_token}\n'
-                                        f'Email: {_email}\n'
-                                        f'Password: {_pwd}\n'
-                                        f'Self-hosting: {_self}\n'
-                                        f'If you want to change any of those just type the corresponding field')
+        except TypeError:  # unregistered
+            def dm_reply(m):
+                return m.guild is None and m.author == user
 
-                    async def _complete_user_info(_uid):
-                        await _send_current_info(uid)
-                        resp_ = await self._get_user_reply(user)
-                        if resp_.lower() == 'self':
-                            await user.send(await _self_host(uid))
-                        elif resp_.lower() == 'token':
-                            new_token = await self._get_user_token(user)
-                            firestore.update_user(uid, False, new_token=new_token)
-                        elif resp_.lower() == 'email':
-                            new_email = await self._get_user_email(user)
-                            firestore.update_user(uid, False, new_email=new_email)
-                        elif resp_.lower() in ['pwd', 'password']:
-                            new_pwd = await self._get_user_pwd(user)
-                            firestore.update_user(uid, False, new_pwd=new_pwd)
-                        await _complete_user_info(uid)
-
-            except TypeError:
-                def dm_reply(m):
-                    return m.guild is None and m.author == user
-
-                await user.send('Hello! Please reply with either the required information or with `self` to self-host\n'
-                                'Please start with your token:')
-                resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
-                if resp.content == 'self':
-                    await user.send(await _self_host(uid))
-                else:
-                    token_ = resp
-                    email = self._get_user_email(user)
-                    pwd = self._get_user_pwd(user)
-                    firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
-                    await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
-                                    '`b!`\n '
-                                    'If at anytime you need to change the information you entered or switch to '
-                                    'self-hosting, '
-                                    'just run register again')
-        except TimeoutError:
-            return
+            await user.send('Hello! Please reply with either the required information or with `self` to self-host\n'
+                            'Please start with your token:')
+            try:
+                resp = await self._get_user_token(user)
+            except TimeoutError:
+                return
+            if resp == 'self':
+                await user.send(await _self_host(uid))
+            else:
+                token_ = resp
+                email = await self._get_user_email(user)
+                pwd = await self._get_user_pwd(user)
+                firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
+                await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
+                                '`b!`\n '
+                                'If at anytime you need to change the information you entered or switch to '
+                                'self-hosting, '
+                                'just run register again')
 
 
 def setup(bot):

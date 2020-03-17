@@ -28,6 +28,10 @@ def get_user(uid):
     return _get_doc(f'users/{uid}')
 
 
+def delete_user(uid):
+    _delete(f'users/{uid}')
+
+
 def _write(path, data, merge=True):
     ref = db.document(path)
     ref.set(data, merge=merge)
