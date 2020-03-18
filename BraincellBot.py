@@ -73,6 +73,33 @@ async def on_message(message):
     uid = str(user.id)
     user_ = await firestore.get_user(uid)
 
+    if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}$", message.content):
+        mentioned = message.mentions[0]
+        uid = str(mentioned.id)
+        mentioned_ = await firestore.get_user(uid)
+        counter_ = await firestore.get_command(uid, 'counter')
+        if not mentioned_:
+            await message.channel.send(f'The user you mentioned isn\'t registered.')
+            return
+        elif message.author.id not in counter_['whitelist']:
+            await message.channel.send(f"You're not allowed to change {mentioned.name}'s counter. "
+                                       f"Ask them to add you to the whitelist with `whitelist <mention>`")
+        elif not counter_['enabled']:
+            await message.channel.send(f"{mentioned.name} currently has this command disabled. "
+                                       f"They can re-enable it with `settings counter enable`.")
+        count_ = counter_['c']
+        if 'braincells++' in message.content:
+            count_ += 1
+        else:
+            count_ -= 1
+        template = counter_['template']
+        status = template.replace('$COUNTER$', count_)
+        await firestore.update_command(uid, 'status', status)
+        if not mentioned_['self']:
+            await change_status(mentioned_['token'], status)
+
+        return
+
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
         if user_:
             await message.channel.send(f'Hewwo {message.author.mention} your prefix is '
