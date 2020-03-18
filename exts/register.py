@@ -8,7 +8,7 @@ from mods import firestore
 
 async def _self_host(uid: str):
     custom_token = token.create_custom_token(uid).decode('utf-8')
-    firestore.update_user(uid, True, new_token=custom_token, prefix='b!')
+    await firestore.update_user(uid, True, new_token=custom_token, prefix='b!')
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
@@ -78,7 +78,7 @@ class Register(commands.Cog):
         uid = str(user.id)
 
         async def _send_current_info():
-            _user = firestore.get_user(str(user.id))
+            _user = await firestore.get_user(str(user.id))
             _token = _user['token']
             _email = _user['email']
             _pwd = _user['pwd']
@@ -107,22 +107,22 @@ class Register(commands.Cog):
                 await user.send(await _self_host(uid))
             elif resp_ == 'token':
                 new_token = await self._get_user_token(user)
-                firestore.update_field(uid, 'token', new_token)
+                await firestore.update_field(uid, 'token', new_token)
             elif resp_ == 'email':
                 new_email = await self._get_user_email(user)
-                firestore.update_field(uid, 'email', new_email)
+                await firestore.update_field(uid, 'email', new_email)
             elif resp_ in ['pwd', 'password']:
                 new_pwd = await self._get_user_pwd(user)
-                firestore.update_field(uid, 'pwd', new_pwd)
+                await firestore.update_field(uid, 'pwd', new_pwd)
             elif resp_ == 'prefix':
                 new_prefix = await self._get_user_prefix(user)
-                firestore.update_field(uid, 'prefix', new_prefix)
+                await firestore.update_field(uid, 'prefix', new_prefix)
             elif resp_ == 'active':
                 curr = firestore.get_user(uid)['active']
-                firestore.update_field(uid, 'active', not curr)
+                await firestore.update_field(uid, 'active', not curr)
             await _complete_user_info()
 
-        user_ = firestore.get_user(uid)
+        user_ = await firestore.get_user(uid)
         if user_:  # user is in database
             token_ = user_['token']
             self_ = user_['self']
@@ -148,13 +148,13 @@ class Register(commands.Cog):
             if not resp:
                 return
             if resp == 'self':
-                firestore.add_user(uid, self_=True)
+                await firestore.add_user(uid, self_=True)
                 await user.send(await _self_host(uid))
             else:
                 token_ = resp
                 email = await self._get_user_email(user)
                 pwd = await self._get_user_pwd(user)
-                firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
+                await firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
                 await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
                                 '`b!`\n '
                                 'If at anytime you need to change the information you entered or switch to '

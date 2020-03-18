@@ -71,12 +71,12 @@ async def on_message(message):
         return
     user = message.author
     uid = str(user.id)
-    user_ = firestore.get_user(uid)
-    prefix = firestore.get_user(uid)['prefix']
+    user_ = await firestore.get_user(uid)
+    prefix = user_['prefix']
     if not prefix:
         await message.channel.send(f'Howdy {message.author.mention}, you haven\'t set a prefix yet... '
                                    'Oopsie! Don\'t worry, I\'ve set it to `b!` for you.')
-        firestore.update_field(uid, 'prefix', 'b!')
+        await firestore.update_field(uid, 'prefix', 'b!')
         return
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
         await message.channel.send(f'Hewwo {message.author.mention} your prefix is '
