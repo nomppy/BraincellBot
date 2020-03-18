@@ -24,7 +24,7 @@ def _get_doc(path):
     return ref.get().to_dict()
 
 
-def get_user(uid):
+def get_user(uid: str):
     return _get_doc(f'users/{uid}')
 
 

@@ -4,15 +4,17 @@ import time
 
 from discord.ext import commands
 from dotenv import load_dotenv
-import importlib
 
+load_dotenv()
+
+from mods import firestore
 from mods import admin
 from mods.core import change_status
 from keep_alive import keep_alive
+from exts import register
 
-load_dotenv()
 BOT_PREFIX = 'b!'
-bot = commands.Bot(command_prefix='b!')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
 BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 GUILD_ID = 671052553705750580
@@ -43,6 +45,7 @@ async def reload(ctx, modext=None):
 
     await ctx.send(st)
 
+
 bot.add_command(reload)
 mods = {'_': '_'}
 ignore = ['_', 'uptimecheck.py']  # ignore on loading phase; for debugging purposes
@@ -65,9 +68,26 @@ just_tried = False
 @bot.event
 async def on_message(message):
     if message.author.bot:
-        return -1
+        return
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
         await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{bot.command_prefix}**')
+
+    user = message.author
+    uid = str(user.id)
+    user_ = firestore.get_user(uid)
+    if message.content == 'b!register':
+        await bot.get_command('register')(await bot.get_context(message))
+        return
+    if not user_ and message.content.startswith('b!'):
+        await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
+        return
+    if user_ and not user_['active']:  # if user not in database or account inactive
+        if not user_['active']:
+            await message.channel.send("Your account is deactivated. Activate it by running `register`.")
+            return
+        else:
+            if message.content.startswith(user_['prefix']):
+                await bot.process_commands(message)
     global last_braincell
     global last_meow
     global just_tried
@@ -96,7 +116,6 @@ async def on_message(message):
                     with open('braincell_count', 'w') as f:
                         f.write(str(count))
                     await message.channel.send('Braincell Counter successfully updated.')
-    await bot.process_commands(message)
 
 
 keep_alive()
