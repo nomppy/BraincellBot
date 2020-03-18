@@ -1,5 +1,5 @@
 from discord.ext import commands
-from firebase_admin.auth import UserNotFoundError
+from google.api_core.exceptions import NotFound
 
 from mods import firestore
 
@@ -18,7 +18,7 @@ async def unregister(ctx, arg=None):
                  'Run `unregister -d` to completely delete your account.'
             firestore.update_user(uid, self_=False, new_token=None, new_pwd=None, new_email=None, active=False)
         await ctx.send(st)
-    except UserNotFoundError:
+    except NotFound:
         await ctx.send('Your account couldn\'t be found.')
 
 
