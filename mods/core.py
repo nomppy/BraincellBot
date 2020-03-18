@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 import os
 import base64
 
-from mods import firestore
 
 load_dotenv()
 token = os.getenv('USER_TOKEN')
@@ -29,13 +28,6 @@ async def change_avatar(user_: dict, img_link):
     if file_ext != 'png' and file_ext != 'jpg':
         return 'Image type not supported.'
 
-    if user_['self']:
-        #  update self-hosting thingy here
-        pass
-
-        # check if operation is completed
-        return
-
     async with aiohttp.ClientSession() as session:
         resp = await session.get(img_link)
         img_b64 = base64.b64encode(await resp.read()).decode()
@@ -58,12 +50,13 @@ async def change_avatar(user_: dict, img_link):
             return 'Something funky wonky happened :('
 
 
-async def change_status(message):
+async def change_status(token_, message):
     status = {
         'custom_status': {
             'text': message
         }
     }
+    headers['token'] = token_
     status = json.dumps(status, separators=(',', ':'))
     async with aiohttp.ClientSession() as session:
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
