@@ -6,9 +6,10 @@ from mods import token
 from mods import firestore
 
 
-async def _self_host(uid: str):
+async def _self_host(user):
+    uid = str(user.id)
     custom_token = token.create_custom_token(uid).decode('utf-8')
-    await firestore.update_user(uid, True, new_token=custom_token, prefix='b!')
+    await firestore.update_user(uid, True, username=user.name, new_token=custom_token, prefix='b!')
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
@@ -24,7 +25,7 @@ class Register(commands.Cog):
             return m.guild is None and m.author == user
 
         try:
-            resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
+            resp = await self.bot.wait_for('message', timeout=45, check=dm_reply)
         except asyncio.TimeoutError:
             return
         return resp.content
@@ -79,6 +80,7 @@ class Register(commands.Cog):
 
         async def _send_current_info():
             _user = await firestore.get_user(str(user.id))
+            _username = _user['username']
             _token = _user['token']
             _email = _user['email']
             _pwd = _user['pwd']
@@ -86,6 +88,7 @@ class Register(commands.Cog):
             _prefix = _user['prefix']
             _active = _user['active']
             await user.send(f'Here\'s what we have on file for you:```\n'
+                            f'Username: {_username}'
                             f'Token: {_token}\n'
                             f'Email: {_email}\n'
                             f'Password: {_pwd}\n'
@@ -95,16 +98,18 @@ class Register(commands.Cog):
                             '(type self to switch to self-hosting, all current information will be wiped)```'
                             'If you want to change any of those just type the corresponding field, if not, '
                             'just don\'t type anything (duh). \n'
-                            'Also, you only have 30 seconds to reply and then you will DIE')
+                            'Also, you only have 45 seconds to reply and then you will DIE')
 
         async def _complete_user_info():
+            if not user_['username']:
+                await firestore.update_field(uid, 'username', user.name)
             await _send_current_info()
             resp_ = await self._get_user_reply(user)
             if not resp_:
                 return
             resp_ = resp_.lower()
             if resp_ == 'self':
-                await user.send(await _self_host(uid))
+                await user.send(await _self_host(user))
             elif resp_ == 'token':
                 new_token = await self._get_user_token(user)
                 await firestore.update_field(uid, 'token', new_token)
@@ -118,7 +123,7 @@ class Register(commands.Cog):
                 new_prefix = await self._get_user_prefix(user)
                 await firestore.update_field(uid, 'prefix', new_prefix)
             elif resp_ == 'active':
-                curr = firestore.get_user(uid)['active']
+                curr = user_['active']
                 await firestore.update_field(uid, 'active', not curr)
             await _complete_user_info()
 
@@ -136,25 +141,25 @@ class Register(commands.Cog):
             else:
                 if active_:  # account is active
                     await ctx.send('You\'re already registered!')
-                    await _complete_user_info()
                 else:  # account deactivated
                     await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
                                    'again. (If you changed your prefix it has been reset to `b!`)')
-                    await _complete_user_info()
+                await _complete_user_info()
 
         else:
-            await user.send('Hello! Please reply with either the required information or with `self` to self-host')
+            await user.send('Hello! Please reply with either the required information or with `self` to self-host. '
+                            'After 45 seconds I get bored and you will have to run the command again.')
             resp = await self._get_user_token(user)
             if not resp:
                 return
             if resp == 'self':
-                await firestore.add_user(uid, self_=True)
-                await user.send(await _self_host(uid))
+                await firestore.add_user(uid, username=user.name, self_=True)
+                await user.send(await _self_host(user))
             else:
                 token_ = resp
                 email = await self._get_user_email(user)
                 pwd = await self._get_user_pwd(user)
-                await firestore.add_user(uid, self_=False, token=token_, email=email, pwd=pwd)
+                await firestore.add_user(uid, username=user.name, self_=False, token=token_, email=email, pwd=pwd)
                 await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
                                 '`b!`\n '
                                 'If at anytime you need to change the information you entered or switch to '

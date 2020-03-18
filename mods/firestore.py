@@ -66,9 +66,10 @@ async def delete_collection(coll_ref, batch_size):
         return delete_collection(coll_ref, batch_size)
 
 
-async def update_user(uid, self_, new_token=None, new_email=None, new_pwd=None, prefix=None, active=True):
+async def update_user(uid, self_, username=None, new_token=None, new_email=None, new_pwd=None, prefix=None, active=True):
     path = f'users/{uid}'
     data = {
+        'username': username,
         'token': new_token,
         'email': new_email,
         'pwd': new_pwd,
@@ -79,9 +80,10 @@ async def update_user(uid, self_, new_token=None, new_email=None, new_pwd=None, 
     await _update(path, data)
 
 
-async def add_user(uid, self_, token=None, email=None, pwd=None, prefix='b!', active=True):
+async def add_user(uid, self_, username=None, token=None, email=None, pwd=None, prefix='b!', active=True):
     path = f'users/{uid}'
     data = {
+        'username': username,
         'token': token,
         'email': email,
         'pwd': pwd,
