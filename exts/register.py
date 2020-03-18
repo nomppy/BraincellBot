@@ -1,5 +1,6 @@
+import asyncio
+
 from discord.ext import commands
-from firebase_admin.auth import UserNotFoundError
 
 from mods import token
 from mods import firestore
@@ -24,7 +25,8 @@ class Register(commands.Cog):
 
         try:
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
-        except TimeoutError:
+        except asyncio.TimeoutError:
+            print('hola')
             return
         return resp.content
 
@@ -33,10 +35,7 @@ class Register(commands.Cog):
         await user.send(
             'Enter your discord token here, your token is required for the bot to change your status message.\n'
             'So you can enter `none` if you dont want that function.')
-        try:
-            resp = await self._get_user_reply(user)
-        except TimeoutError:
-            return
+        resp = await self._get_user_reply(user)
         if resp == 'none':
             return None
         else:
@@ -46,10 +45,7 @@ class Register(commands.Cog):
         # TODO same thing here, use regex to see if it's a valid email
         await user.send('Enter the email you used to sign up for discord, this is needed to change your avatar\n'
                         'You can also enter `none` if you want to opt-out.')
-        try:
-            resp = await self._get_user_reply(user)
-        except TimeoutError:
-            return
+        resp = await self._get_user_reply(user)
         if resp.lower() == 'none':
             return None
         else:
@@ -58,10 +54,7 @@ class Register(commands.Cog):
     async def _get_user_pwd(self, user):
         await user.send('Enter your discord password, this is also needed to change your avatar\n'
                         'As always, enter `none` if you want')
-        try:
-            resp = await self._get_user_reply(user)
-        except TimeoutError:
-            return
+        resp = await self._get_user_reply(user)
         if resp.lower() == 'none':
             return None
         else:
@@ -69,11 +62,9 @@ class Register(commands.Cog):
 
     async def _get_user_prefix(self, user):
         await user.send('Now enter your preferred prefix for the bot, this can be changed at any time with the '
-                        '`prefix [new_prefix]` command.')
-        try:
-            resp = await self._get_user_reply(user)
-        except TimeoutError:
-            return
+                        '`prefix [new_prefix]` command. Beware that if you set this to none, you will not be able '
+                        'to use any commands!')
+        resp = await self._get_user_reply(user)
         if resp.lower() == 'none':
             return None
         else:
@@ -100,7 +91,7 @@ class Register(commands.Cog):
                             f'Email: {_email}\n'
                             f'Password: {_pwd}\n'
                             f'Prefix: {_prefix}\n'
-                            f'Active: {_active} (type active to activate account)\n'
+                            f'Active: {_active} (type active to toggle activation)\n'
                             f'Self-hosting: {_self} '
                             f'(type self to switch to self-hosting, all current information will be wiped)```'
                             f'If you want to change any of those just type the corresponding field, if not, '
@@ -125,7 +116,8 @@ class Register(commands.Cog):
                 new_prefix = await self._get_user_prefix(user)
                 firestore.update_field(uid, 'prefix', new_prefix)
             elif resp_ == 'active':
-                firestore.update_field(uid, 'active', True)
+                curr = firestore.get_user(uid)['active']
+                firestore.update_field(uid, 'active', not curr)
             await _complete_user_info()
 
         user_ = firestore.get_user(uid)
@@ -136,17 +128,16 @@ class Register(commands.Cog):
             if self_:  # registered and self hosting
                 await ctx.send('You\'re already registered, dming you your token')
                 await user.send(f'Here\'s your token again, don\'t lose it this time! ```{token_}```\n'
-                                f'Did you want to revoke or regenerate your token? Use revoke & refresh'
-                                f'If you want to switch to letting the bot manage everything for you, revoke '
-                                f'your token with revoke and do register again')
+                                'Did you want to regenerate your token? Run `unregister` and then '
+                                'run `register` again to switch to bot-hosting and `refresh` to regenerate a token.')
                 # TODO user react to delete message
             else:
                 if active_:  # account is active
                     await ctx.send('You\'re already registered!')
-                    await _send_current_info()
+                    await _complete_user_info()
                 else:  # account deactivated
                     await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
-                                   'again.')
+                                   'again. (If you changed your prefix it has been reset to `b!`)')
                     await _complete_user_info()
 
         else:

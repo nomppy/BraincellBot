@@ -72,8 +72,15 @@ async def on_message(message):
     user = message.author
     uid = str(user.id)
     user_ = firestore.get_user(uid)
+    prefix = firestore.get_user(uid)['prefix']
+    if not prefix:
+        await message.channel.send(f'Howdy {message.author.mention}, you haven\'t set a prefix yet... '
+                                   'Oopsie! Don\'t worry, I\'ve set it to `b!` for you.')
+        firestore.update_field(uid, 'prefix', 'b!')
+        return
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
-        await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{firestore.get_user(uid)["prefix"]}**')
+        await message.channel.send(f'Hewwo {message.author.mention} your prefix is '
+                                   f'**{prefix}**')
 
     if message.content == 'b!register':
         await bot.get_command('register')(await bot.get_context(message))
@@ -82,12 +89,12 @@ async def on_message(message):
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
         return
     if user_:  # if user not in database or account inactive
-        if not user_['active']:
+        if not user_['active'] and message.guild is not None:
             await message.channel.send("Your account is deactivated. Activate it by running `register`.")
             return
         else:
-            if message.content.startswith(user_['prefix']):
-                message.content = message.content[len(user_['prefix']):]
+            if message.content.startswith(prefix):
+                message.content = message.content[len(prefix):]
                 await bot.process_commands(message)
     global last_braincell
     global last_meow
