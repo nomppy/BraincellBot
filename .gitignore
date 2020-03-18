@@ -1,6 +1,7 @@
 .env
 .idea/
 braincell_count
+node_modules/
 
 *.json
 *.pyc
