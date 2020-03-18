@@ -6,13 +6,18 @@ from mods import token
 
 
 @commands.command()
-async def unregister(ctx):
+async def unregister(ctx, arg=None):
     user = ctx.author
     uid = str(user.id)
     try:
-        firestore.update_user(uid, self_=False, new_token=None)
-        firestore.delete_user(uid)
-        await ctx.send('Your account has been deactivated.')
+        if arg in ['-d', 'delete']:
+            firestore.delete_user(uid)
+            st = 'I have deleted all records of your account.'
+        else:
+            st = 'Your account has been deactivated. '\
+                 'I still have all your preferences saved should you like to reactive your account.'
+            firestore.update_user(uid, self_=False, new_token=None, new_pwd=None, new_email=None, active=False)
+        await ctx.send(st)
     except UserNotFoundError:
         await ctx.send('Your account couldn\'t be found.')
 

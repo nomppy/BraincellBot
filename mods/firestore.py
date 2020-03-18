@@ -58,24 +58,26 @@ def delete_collection(coll_ref, batch_size):
         return delete_collection(coll_ref, batch_size)
 
 
-def update_user(uid, self_, new_token=None, new_email=None, new_pwd=None):
+def update_user(uid, self_, new_token=None, new_email=None, new_pwd=None, active=True):
     path = f'users/{uid}'
     data = {
         'token': new_token,
         'email': new_email,
         'pwd': new_pwd,
-        'self': self_
+        'self': self_,
+        'active': active
     }
     _update(path, data)
 
 
-def add_user(uid, self_, token=None, email=None, pwd=None):
+def add_user(uid, self_, token=None, email=None, pwd=None, active=True):
     path = f'users/{uid}'
     data = {
         'token': token,
         'email': email,
         'pwd': pwd,
-        'self': self_
+        'self': self_,
+        'active': active
     }
     _write(path, data)
 

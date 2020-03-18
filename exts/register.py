@@ -1,4 +1,6 @@
 from discord.ext import commands
+from firebase_admin.auth import UserNotFoundError
+
 from mods import token
 from mods import firestore
 
@@ -73,23 +75,25 @@ class Register(commands.Cog):
         user = ctx.author
         uid = str(user.id)
 
-        async def _send_current_info(_uid):
-            _token = firestore.get_user(_uid)['token']
-            _email = firestore.get_user(_uid)['email']
-            _pwd = firestore.get_user(_uid)['pwd']
-            _self = firestore.get_user(_uid)['self']
-            await user.send(f'Here\'s what we have on file for you:\n'
-                            f'Token: {_token}\n'
-                            f'Email: {_email}\n'
-                            f'Password: {_pwd}\n'
-                            f'Self-hosting: {_self}\n'
-                            f'If you want to change any of those just type the corresponding field')
+        async def _send_current_info(__user):
+            _user = firestore.get_user(str(__user.id))
+            _token = _user['token']
+            _email = _user['email']
+            _pwd = _user['pwd']
+            _self = _user['self']
+            await __user.send(f'Here\'s what we have on file for you:\n'
+                              f'Token: {_token}\n'
+                              f'Email: {_email}\n'
+                              f'Password: {_pwd}\n'
+                              f'Self-hosting: {_self}\n'
+                              f'If you want to change any of those just type the corresponding field')
 
-        async def _complete_user_info(_uid):
-            await _send_current_info(uid)
+        async def _complete_user_info(__user):
+            await _send_current_info(__user)
             resp_ = await self._get_user_reply(user)
             if resp_.lower() == 'self':
                 await user.send(await _self_host(uid))
+                return
             elif resp_.lower() == 'token':
                 new_token = await self._get_user_token(user)
                 firestore.update_user(uid, False, new_token=new_token)
@@ -99,31 +103,31 @@ class Register(commands.Cog):
             elif resp_.lower() in ['pwd', 'password']:
                 new_pwd = await self._get_user_pwd(user)
                 firestore.update_user(uid, False, new_pwd=new_pwd)
-            await _complete_user_info(uid)
+            await _complete_user_info(__user)
 
-        try:
-            user_ = firestore.get_user(uid)
-            token_ = user['token']
-            if user_:  # registered
-                self_ = user_['self']
-                if self_:  # self-hosting
-                    await ctx.send('You\'re already registered, dming you your token')
-                    user_token = firestore.get_user(uid)['token']
-                    await user.send(f'Here\'s your token again, don\'t lose it this time! ```{user_token}```\n'
-                                    f'Did you want to revoke or regenerate your token? Use revoke & refresh'
-                                    f'If you want to switch to letting the bot manage everything for you, revoke '
-                                    f'your token with revoke and do register again')
-                    # TODO user react to delete message
-                else:  # bot hosting
-                    await ctx.send('It says here that you\'re self-hosting, dming you the information I have on file')
-                    user.send(await _send_current_info(uid))
+        user_ = firestore.get_user(uid)
+        if user_:  # user is in database
+            token_ = user_['token']
+            self_ = user_['self']
+            active_ = user_['active']
+            if self_:  # registered and self hosting
+                await ctx.send('You\'re already registered, dming you your token')
+                await user.send(f'Here\'s your token again, don\'t lose it this time! ```{token_}```\n'
+                                f'Did you want to revoke or regenerate your token? Use revoke & refresh'
+                                f'If you want to switch to letting the bot manage everything for you, revoke '
+                                f'your token with revoke and do register again')
+                # TODO user react to delete message
+            else:
+                if active_:  # account is active
+                    await ctx.send('You\'re already registered!')
+                    await _send_current_info(user)
+                else:  # account deactivated
+                    await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
+                                   'again.')
+                    await _complete_user_info(user)
 
-        except TypeError:  # unregistered
-            def dm_reply(m):
-                return m.guild is None and m.author == user
-
-            await user.send('Hello! Please reply with either the required information or with `self` to self-host\n'
-                            'Please start with your token:')
+        else:
+            await user.send('Hello! Please reply with either the required information or with `self` to self-host')
             try:
                 resp = await self._get_user_token(user)
             except TimeoutError:
