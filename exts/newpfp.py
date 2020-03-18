@@ -1,4 +1,6 @@
 from discord.ext import commands
+
+from mods import firestore
 from mods.core import get_cat_link
 from mods.core import change_avatar
 
@@ -8,6 +10,8 @@ async def newpfp(ctx, arg='random'):
     if ctx.author.bot:
         return
     async with ctx.typing():
+        if arg in ['last', '^', '_']:
+            arg = (await firestore.get_command(str(ctx.author.id), 'meow'))['_last']
         result = await _new_avatar(ctx, arg)
         await ctx.send(result)
 

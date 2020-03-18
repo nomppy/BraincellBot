@@ -19,6 +19,10 @@ async def update_field(uid: str, field, value):
     await _write(f'users/{uid}', {field: value})
 
 
+async def update_command(uid: str, command: str, field, value):
+    await _write(f'users/{uid}/commands/{command}', {field: value})
+
+
 async def _get_doc(path):
     ref = db.document(path)
     return ref.get().to_dict()
