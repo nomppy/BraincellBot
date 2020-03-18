@@ -7,7 +7,7 @@ from mods import firestore
 
 async def _self_host(uid: str):
     custom_token = token.create_custom_token(uid).decode('utf-8')
-    firestore.add_user(uid, True, custom_token)
+    firestore.update_user(uid, True, new_token=custom_token, prefix='b!')
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
@@ -56,8 +56,20 @@ class Register(commands.Cog):
             return resp
 
     async def _get_user_pwd(self, user):
-        await user.send('Finally, enter your discord password, this is also needed to change your avatar\n'
+        await user.send('Enter your discord password, this is also needed to change your avatar\n'
                         'As always, enter `none` if you want')
+        try:
+            resp = await self._get_user_reply(user)
+        except TimeoutError:
+            return
+        if resp.lower() == 'none':
+            return None
+        else:
+            return resp
+
+    async def _get_user_prefix(self, user):
+        await user.send('Now enter your preferred prefix for the bot, this can be changed at any time with the '
+                        '`prefix [new_prefix]` command.')
         try:
             resp = await self._get_user_reply(user)
         except TimeoutError:
@@ -75,35 +87,46 @@ class Register(commands.Cog):
         user = ctx.author
         uid = str(user.id)
 
-        async def _send_current_info(__user):
-            _user = firestore.get_user(str(__user.id))
+        async def _send_current_info():
+            _user = firestore.get_user(str(user.id))
             _token = _user['token']
             _email = _user['email']
             _pwd = _user['pwd']
             _self = _user['self']
-            await __user.send(f'Here\'s what we have on file for you:\n'
-                              f'Token: {_token}\n'
-                              f'Email: {_email}\n'
-                              f'Password: {_pwd}\n'
-                              f'Self-hosting: {_self}\n'
-                              f'If you want to change any of those just type the corresponding field')
+            _prefix = _user['prefix']
+            _active = _user['active']
+            await user.send(f'Here\'s what we have on file for you:```\n'
+                            f'Token: {_token}\n'
+                            f'Email: {_email}\n'
+                            f'Password: {_pwd}\n'
+                            f'Prefix: {_prefix}\n'
+                            f'Active: {_active} (type active to activate account)\n'
+                            f'Self-hosting: {_self} '
+                            f'(type self to switch to self-hosting, all current information will be wiped)```'
+                            f'If you want to change any of those just type the corresponding field, if not, '
+                            f'just don\'t type anything (duh).')
 
-        async def _complete_user_info(__user):
-            await _send_current_info(__user)
+        async def _complete_user_info():
+            await _send_current_info()
             resp_ = await self._get_user_reply(user)
-            if resp_.lower() == 'self':
+            resp_ = resp_.lower()
+            if resp_ == 'self':
                 await user.send(await _self_host(uid))
-                return
-            elif resp_.lower() == 'token':
+            elif resp_ == 'token':
                 new_token = await self._get_user_token(user)
-                firestore.update_user(uid, False, new_token=new_token)
-            elif resp_.lower() == 'email':
+                firestore.update_field(uid, 'token', new_token)
+            elif resp_ == 'email':
                 new_email = await self._get_user_email(user)
-                firestore.update_user(uid, False, new_email=new_email)
-            elif resp_.lower() in ['pwd', 'password']:
+                firestore.update_field(uid, 'email', new_email)
+            elif resp_ in ['pwd', 'password']:
                 new_pwd = await self._get_user_pwd(user)
-                firestore.update_user(uid, False, new_pwd=new_pwd)
-            await _complete_user_info(__user)
+                firestore.update_field(uid, 'pwd', new_pwd)
+            elif resp_ == 'prefix':
+                new_prefix = await self._get_user_prefix(user)
+                firestore.update_field(uid, 'prefix', new_prefix)
+            elif resp_ == 'active':
+                firestore.update_field(uid, 'active', True)
+            await _complete_user_info()
 
         user_ = firestore.get_user(uid)
         if user_:  # user is in database
@@ -120,11 +143,11 @@ class Register(commands.Cog):
             else:
                 if active_:  # account is active
                     await ctx.send('You\'re already registered!')
-                    await _send_current_info(user)
+                    await _send_current_info()
                 else:  # account deactivated
                     await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
                                    'again.')
-                    await _complete_user_info(user)
+                    await _complete_user_info()
 
         else:
             await user.send('Hello! Please reply with either the required information or with `self` to self-host')
@@ -133,6 +156,7 @@ class Register(commands.Cog):
             except TimeoutError:
                 return
             if resp == 'self':
+                firestore.add_user(uid, self_=True)
                 await user.send(await _self_host(uid))
             else:
                 token_ = resp
