@@ -81,12 +81,13 @@ async def on_message(message):
     if not user_ and message.content.startswith('b!'):
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
         return
-    if user_ and not user_['active']:  # if user not in database or account inactive
+    if user_:  # if user not in database or account inactive
         if not user_['active']:
             await message.channel.send("Your account is deactivated. Activate it by running `register`.")
             return
         else:
             if message.content.startswith(user_['prefix']):
+                message.content = message.content[len(user_['prefix']):]
                 await bot.process_commands(message)
     global last_braincell
     global last_meow
