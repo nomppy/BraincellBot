@@ -3,6 +3,7 @@ import json
 
 import firebase_admin
 from firebase_admin import firestore
+from Naked.toolshed.shell import execute_js, muterun_js
 
 
 # avoid initializing multiple instances of the same app
@@ -33,7 +34,7 @@ async def get_user(uid: str):
 
 
 async def delete_user(uid):
-    await _delete_collection(db.collection(f'users/{uid}/commands'))
+    await delete_collection(f'users/{uid}/commands')
     await _delete(f'users/{uid}')
 
 
@@ -55,16 +56,12 @@ async def get_command(uid: str, command: str):
     return await _get_doc(f'users/{uid}/commands/{command}')
 
 
-async def _delete_collection(coll_ref, batch_size=0):
-    docs = coll_ref.limit(batch_size).stream()
-    deleted = 0
-
-    for doc in docs:
-        doc.reference.delete()
-        deleted += 1
-
-    if deleted >= batch_size:
-        return await _delete_collection(coll_ref, batch_size)
+async def delete_collection(path):
+    success = execute_js('mods/delete_collection.js', path)
+    if success:
+        return 'Deleted collection'
+    else:
+        return 'Failed to delete collection'
 
 
 async def update_user(uid, self_, username=None, new_token=None, new_email=None, new_pwd=None, prefix=None, active=True):
