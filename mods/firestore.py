@@ -33,6 +33,7 @@ async def get_user(uid: str):
 
 
 async def delete_user(uid):
+    await _delete_collection(db.collection(f'users/{uid}/commands'))
     await _delete(f'users/{uid}')
 
 
@@ -54,7 +55,7 @@ async def get_command(uid: str, command: str):
     return await _get_doc(f'users/{uid}/commands/{command}')
 
 
-async def delete_collection(coll_ref, batch_size):
+async def _delete_collection(coll_ref, batch_size=0):
     docs = coll_ref.limit(batch_size).stream()
     deleted = 0
 
@@ -63,7 +64,7 @@ async def delete_collection(coll_ref, batch_size):
         deleted += 1
 
     if deleted >= batch_size:
-        return delete_collection(coll_ref, batch_size)
+        return await _delete_collection(coll_ref, batch_size)
 
 
 async def update_user(uid, self_, username=None, new_token=None, new_email=None, new_pwd=None, prefix=None, active=True):
