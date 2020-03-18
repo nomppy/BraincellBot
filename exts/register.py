@@ -26,7 +26,6 @@ class Register(commands.Cog):
         try:
             resp = await self.bot.wait_for('message', timeout=30.0, check=dm_reply)
         except asyncio.TimeoutError:
-            print('hola')
             return
         return resp.content
 
