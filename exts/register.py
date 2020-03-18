@@ -93,13 +93,16 @@ class Register(commands.Cog):
                             f'Prefix: {_prefix}\n'
                             f'Active: {_active} (type active to toggle activation)\n'
                             f'Self-hosting: {_self} '
-                            f'(type self to switch to self-hosting, all current information will be wiped)```'
-                            f'If you want to change any of those just type the corresponding field, if not, '
-                            f'just don\'t type anything (duh).')
+                            '(type self to switch to self-hosting, all current information will be wiped)```'
+                            'If you want to change any of those just type the corresponding field, if not, '
+                            'just don\'t type anything (duh). \n'
+                            'Also, you only have 30 seconds to reply and then you will DIE')
 
         async def _complete_user_info():
             await _send_current_info()
             resp_ = await self._get_user_reply(user)
+            if not resp_:
+                return
             resp_ = resp_.lower()
             if resp_ == 'self':
                 await user.send(await _self_host(uid))
@@ -142,9 +145,8 @@ class Register(commands.Cog):
 
         else:
             await user.send('Hello! Please reply with either the required information or with `self` to self-host')
-            try:
-                resp = await self._get_user_token(user)
-            except TimeoutError:
+            resp = await self._get_user_token(user)
+            if not resp:
                 return
             if resp == 'self':
                 firestore.add_user(uid, self_=True)
