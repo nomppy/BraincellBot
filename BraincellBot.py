@@ -69,12 +69,12 @@ just_tried = False
 async def on_message(message):
     if message.author.bot:
         return
-    if re.match(rf"^<@!?{bot.user.id}>$", message.content):
-        await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{bot.command_prefix}**')
-
     user = message.author
     uid = str(user.id)
     user_ = firestore.get_user(uid)
+    if re.match(rf"^<@!?{bot.user.id}>$", message.content):
+        await message.channel.send(f'Hewwo {message.author.mention} your prefix is **{firestore.get_user(uid)["prefix"]}**')
+
     if message.content == 'b!register':
         await bot.get_command('register')(await bot.get_context(message))
         return

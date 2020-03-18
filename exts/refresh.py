@@ -1,6 +1,5 @@
 from discord.ext import commands
 from mods import token
-from mods import firestore
 
 
 @commands.command()
