@@ -52,8 +52,6 @@ def setup(bot):
         name='counter',
         data={
             'template': 'Any string, use `$COUNTER$` where you want the numbers to go',
-            'whitelist': 'mention user or paste their id',
-            'blacklist': 'mention user or paste their id',
             'enable': '',
             'disable': ''
         }

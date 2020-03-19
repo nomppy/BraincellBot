@@ -20,7 +20,7 @@ async def settings(ctx, command=None, field=None, value=None):
     elif not command or not field or not value:
         await ctx.send("Incorrect syntax, see `help settings`.")
         return
-    elif not command_[field]:
+    elif not info.get_settings(command)[field]:
         await ctx.send(f"The specified setting does not exist. See `settings {command}` for available settings.")
 
     await firestore.update_command(uid, command, field, value)

@@ -1,15 +1,15 @@
 from discord.ext import commands
-from mods import firestore, info
+
+from exts import whitelist
+from mods import info
 
 
 @commands.command()
-async def blacklist(ctx, command, user):
-    if type(user) is str:
-        user = ctx.message.mentions[0]
-    uid = str(user.id)
-    whitelist_ = (await firestore.get_command(uid, command))['whitelist']
-    whitelist_.remove(user.id)
-    await firestore.update_command(uid, command, 'whitelist', whitelist_)
+async def blacklist(ctx, command=None, user=None):
+    if not user:
+        await ctx.send('You must provide both a command and a user!')
+    r = await whitelist.whitelist(ctx, command, user, True)
+    await ctx.send(r)
 
 
 def setup(bot):

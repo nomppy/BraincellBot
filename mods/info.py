@@ -17,6 +17,12 @@ def get(command: str):
     return 'Command not found.'
 
 
+def get_settings(command: str):
+    if command in Info.settings:
+        return Info.settings[command]
+    return 'Command has no settings.'
+
+
 class Info:
 
     info = {}
