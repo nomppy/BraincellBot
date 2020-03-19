@@ -8,6 +8,7 @@ from mods import firestore, info
 async def whitelist(ctx, command=None, user=None, remove=False):
     if not user:
         await ctx.send('You must provide both a command and a user!')
+        return 0
     if re.match(r"<@!?[0-9]+>", user):
         user = ctx.message.mentions[0]
         uid = str(user.id)
@@ -16,7 +17,16 @@ async def whitelist(ctx, command=None, user=None, remove=False):
     else:
         return 'Invalid mention.'
     uid_ = str(ctx.author.id)
-    whitelist_ = (await firestore.get_command(uid_, command))['whitelist']
+    command_ = await firestore.get_command(uid_, command)
+    if not command_:
+        await ctx.send('This command does not exist')
+        return
+
+    whitelist_ = command_['whitelist']
+
+    if not whitelist_:
+        await ctx.send('This command does not have a whitelist')
+        return
     if remove:
         whitelist_.remove(uid)
         await firestore.update_command(uid_, command, 'whitelist', whitelist_)
