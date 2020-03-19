@@ -1,6 +1,7 @@
 from discord.ext import commands
 from mods import firestore
 from mods import info
+from mods import vars_
 
 
 @commands.command()
@@ -20,16 +21,22 @@ async def settings(ctx, command=None, field=None, value=None):
     elif not command or not field or not value:
         await ctx.send("Incorrect syntax, see `help settings`.")
         return
-    elif field not in info.get_settings(command)['fields'].keys():
+    elif field not in vars_.info_[command].get_settings():
         await ctx.send(f"The specified setting does not exist. See `settings {command}` for available settings.")
+        return
+    elif value not in vars_.info_[command].get_options():
+        await ctx.send("That's not a valid option for this setting")
+        return
+    
 
     await firestore.update_command(uid, command, field, value)
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='settings',
-        description='configure user-specific settings such as prefix, counter, whitelist',
-        usage='`settings [command] [option] [value]`'
-    ).export()
+        brief='configure things for commands',
+        usage='settings [command] [option] [value]',
+    )
+
     bot.add_command(settings)

@@ -7,19 +7,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from mods import firestore
+from mods import firestore, vars_
 from mods import admin
-from mods.core import change_status
 from keep_alive import keep_alive
-from exts import register
 
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
 BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
-GUILD_ID = 671052553705750580
-USER_ID = 179701226995318785
-ROLE_ID = 681628171778785281
+mods = vars_.mods
+ignore = vars_.ignore
 
 
 # TODO write server code to receive register requests
@@ -47,11 +44,6 @@ async def reload(ctx, modext=None):
 
 
 bot.add_command(reload)
-mods = {'_': '_'}
-ignore = ['_', 'uptimecheck.py']  # ignore on loading phase; for debugging purposes
-info_ = {}
-help_ = {}
-settings_ = {}
 
 
 @bot.event

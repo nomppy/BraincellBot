@@ -14,6 +14,12 @@ class Info:
     def configurable(self):
         return self.settings.keys() is not None
 
+    def get_command(self):
+        return self
+
+    def get_settings(self):
+        return self.settings.keys()
+
     def get_options(self, field: str):
         return self.settings[field]
 
