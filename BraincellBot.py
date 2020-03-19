@@ -49,6 +49,9 @@ async def reload(ctx, modext=None):
 bot.add_command(reload)
 mods = {'_': '_'}
 ignore = ['_', 'uptimecheck.py']  # ignore on loading phase; for debugging purposes
+info_ = {}
+help_ = {}
+settings_ = {}
 
 
 @bot.event
