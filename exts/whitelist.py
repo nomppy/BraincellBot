@@ -37,9 +37,12 @@ async def whitelist(ctx, command=None, user=None, remove=False):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='whitelist',
-        description='allow another user to use a command',
-        usage='`whitelist <command> <user>`'
+        brief='allow another user to use a command',
+        usage='`whitelist <command> <user>`',
+        settings={
+            'default': ['none', 'all'],
+        }
     )
     bot.add_command(whitelist)

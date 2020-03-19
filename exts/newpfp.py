@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from mods import firestore
+from mods import firestore, info
 from mods.core import get_cat_link
 from mods.core import change_avatar
 
@@ -48,4 +48,14 @@ async def _new_avatar(ctx, user_: dict, arg):
 
 
 def setup(bot):
+    info.Info(
+        name='newpfp',
+        brief='changes your avatar to a random cat',
+        description='use `settings newpfp timer <minutes>` to set a timer',
+        usage='`newpfp [last|^|_]`',
+        settings={
+            'timer': int,
+            'enabled': bool,
+        }
+    )
     bot.add_command(newpfp)

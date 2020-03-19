@@ -17,9 +17,10 @@ async def meow(ctx):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='meow',
-        description='sends a picture of a cat',
+        brief='sends a random cat pic',
         usage='`meow`'
-    ).export()
+    )
+
     bot.add_command(meow)

@@ -43,17 +43,15 @@ async def counter(ctx, user):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='counter',
-        description='counts things',
-        usage='`counter <user> <++|-->` or `<user> braincells<++|-->`'
-    ).export()
-    info.Settings(
-        name='counter',
-        data={
-            'template': 'Any string, use `$COUNTER$` where you want the numbers to go',
-            'enable': '',
-            'disable': ''
+        brief='counts things',
+        description='allows other people to increase or decrease the counter in your status',
+        usage='`counter <user> [+|-]` or `<user> braincells[++|--]`',
+        settings={
+            'default': ['none', 'all'],
+            'template': str,
+            'enabled': bool
         }
-    ).export()
+    )
     bot.add_command(counter)

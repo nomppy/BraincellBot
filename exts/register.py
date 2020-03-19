@@ -2,7 +2,7 @@ import asyncio
 
 from discord.ext import commands
 
-from mods import token
+from mods import token, vars_
 from mods import firestore
 from mods import info
 
@@ -177,9 +177,10 @@ class Register(commands.Cog):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='register',
-        description='Getting comfy with me so I can manage your stuffz.',
-        usage="Literally just `register`"
-    ).export()
+        brief='register with bot',
+        description='register with the bot to use its functions, either self-host or provide token/email/pwd',
+        usage='`b!register`'
+    ).export(vars_.info_)
     bot.add_cog(Register(bot))

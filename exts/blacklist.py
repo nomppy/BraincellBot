@@ -13,9 +13,5 @@ async def blacklist(ctx, command=None, user=None):
 
 
 def setup(bot):
-    info.Help(
-        name='blacklist',
-        description='removes a user from the whitelist of a command',
-        usage='`blacklist <command> <user>`'
-    )
+
     bot.add_command(blacklist)

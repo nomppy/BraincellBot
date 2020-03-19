@@ -14,9 +14,9 @@ async def alive(ctx):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='alive',
-        description='see if the bot is alive',
-        usage='`alive`'
-    ).export()
+        brief="this is for you to see if I'm alive",
+        usage='`alive`',
+    )
     bot.add_command(alive)

@@ -23,9 +23,10 @@ async def unregister(ctx, arg=None):
 
 
 def setup(bot):
-    info.Help(
+    info.Info(
         name='unregister',
-        description='deactivates a user by default, `-d` tag deletes all data',
+        brief='deactivates your account',
+        description='call with no arguments to deactivate, append `-d` to delete all data',
         usage='`unregister [-d|delete]`'
-    ).export()
+    )
     bot.add_command(unregister)

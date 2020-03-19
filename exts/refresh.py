@@ -1,5 +1,5 @@
 from discord.ext import commands
-from mods import token
+from mods import token, info
 
 
 @commands.command()
@@ -10,4 +10,11 @@ async def refresh(ctx):
 
 
 def setup(bot):
+    info.Info(
+        name='refresh',
+        brief='refreshes your custom token',
+        description='if you chose to self-host and your token has expired, run this command to get a new one',
+        usage='`refresh`'
+    )
+
     bot.add_command(refresh)
