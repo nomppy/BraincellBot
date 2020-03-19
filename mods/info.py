@@ -78,6 +78,6 @@ class Settings(Info):
 
     def get_fields(self):
         return self.fields
-    
+
     def get_field_options(self, field):
         return self.dict[field]

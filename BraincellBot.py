@@ -73,6 +73,7 @@ async def on_message(message):
     uid = str(user.id)
     user_ = await firestore.get_user(uid)
 
+    # TODO change regex to match the template in database
     if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}$", message.content):
         mentioned = message.mentions[0]
         uid = str(mentioned.id)
@@ -81,12 +82,14 @@ async def on_message(message):
         if not mentioned_:
             await message.channel.send(f'The user you mentioned isn\'t registered.')
             return
-        elif message.author.id not in counter_['whitelist']:
+        elif str(message.author.id) not in counter_['whitelist']:
             await message.channel.send(f"You're not allowed to change {mentioned.name}'s counter. "
                                        f"Ask them to add you to the whitelist with `whitelist <mention>`")
+            return
         elif not counter_['enabled']:
             await message.channel.send(f"{mentioned.name} currently has this command disabled. "
                                        f"They can re-enable it with `settings counter enable`.")
+            return
         count_ = counter_['c']
         if 'braincells++' in message.content:
             count_ += 1
@@ -94,11 +97,15 @@ async def on_message(message):
             count_ -= 1
         template = counter_['template']
         await firestore.update_command(uid, 'counter', 'c', count_)
-        status = template.replace('$COUNTER$', count_)
+        status = template.replace('$COUNTER$', str(count_))
         await firestore.update_command(uid, 'counter', 'status', status)
         if not mentioned_['self']:
-            await change_status(mentioned_['token'], status)
-
+            resp = await change_status(mentioned_['token'], status)
+            if resp.status != 200:
+                print(resp)
+                await message.channel.send(f'Something wonky happened.')
+            return
+        await message.channel.send(f"I\'ve instructed their slave to change their status.")
         return
 
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
@@ -117,7 +124,7 @@ async def on_message(message):
         return
     if user_:  # if user not in database or account inactive
         if not user_['active'] and message.guild is not None:
-            await message.channel.send("Your account is deactivated. Activate it by running `register`.")
+            await message.channel.send("Your account is deactivated. Activate it by running `b!register`.")
             return
         else:
             prefix = user_['prefix']

@@ -56,7 +56,7 @@ async def change_status(token_, message):
             'text': message
         }
     }
-    headers['token'] = token_
+    headers['authorization'] = token_
     status = json.dumps(status, separators=(',', ':'))
     async with aiohttp.ClientSession() as session:
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',

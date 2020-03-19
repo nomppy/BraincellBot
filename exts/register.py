@@ -11,6 +11,13 @@ async def _self_host(user):
     uid = str(user.id)
     custom_token = token.create_custom_token(uid).decode('utf-8')
     await firestore.update_user(uid, True, username=user.name, new_token=custom_token, prefix='b!')
+    await firestore.update_command_fields(uid, 'counter', {
+        'template': 'Braincell Counter: $COUNTER$',
+        'whitelist': uid,
+        'enabled': True,
+        'c': 0,
+        'status': 'Braincell Counter: 0'
+    })
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
@@ -63,11 +70,11 @@ class Register(commands.Cog):
 
     async def _get_user_prefix(self, user):
         await user.send('Now enter your preferred prefix for the bot, this can be changed at any time with the '
-                        '`prefix [new_prefix]` command. Beware that if you set this to none, you will not be able '
-                        'to use any commands!')
+                        '`prefix [new_prefix]` command.')
         resp = await self._get_user_reply(user)
         if resp.lower() == 'none':
-            return None
+            await user.send("That\'s an invalid prefix.")
+            await self._get_user_prefix(user)
         else:
             return resp
 
@@ -89,7 +96,7 @@ class Register(commands.Cog):
             _prefix = _user['prefix']
             _active = _user['active']
             await user.send(f'Here\'s what we have on file for you:```\n'
-                            f'Username: {_username}'
+                            f'Username: {_username}\n'
                             f'Token: {_token}\n'
                             f'Email: {_email}\n'
                             f'Password: {_pwd}\n'
@@ -145,6 +152,7 @@ class Register(commands.Cog):
                 else:  # account deactivated
                     await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
                                    'again. (If you changed your prefix it has been reset to `b!`)')
+                    await firestore.update_field(uid, 'prefix', 'b!')
                 await _complete_user_info()
 
         else:
