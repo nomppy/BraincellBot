@@ -6,6 +6,8 @@ from mods import info
 
 @commands.command()
 async def counter(ctx, user):
+    if type(user) is str:
+        user = ctx.message.mentions[0]
     uid = str(user.id)
     user_ = await firestore.get_user(uid)
     counter_ = await firestore.get_command(uid, 'counter')
@@ -21,9 +23,9 @@ async def counter(ctx, user):
                        f"They can re-enable it with `settings counter enable`.")
         return
     count_ = counter_['c']
-    if 'counter++' in ctx.message.content or 'braincells++' in ctx.message.content:
+    if '++' in ctx.message.content:
         count_ += 1
-    else:
+    elif '--' in ctx.message.content:
         count_ -= 1
     template = counter_['template']
     await firestore.update_command(uid, 'counter', 'c', count_)
