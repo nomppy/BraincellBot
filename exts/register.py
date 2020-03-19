@@ -22,15 +22,6 @@ async def _self_host(user):
     await firestore.update_user(uid, True, username=user.name, new_token=custom_token, prefix='b!')
     await _add_commands_settings(uid)
 
-    # [await firestore.update_command_fields(uid, cmd, cmds[cmd].get_defaults()) for cmd in cmds]
-
-    # await firestore.update_command_fields(uid, 'counter', {
-    #     'template': 'Braincell Counter: $COUNTER$',
-    #     'whitelist': uid,
-    #     'enabled': True,
-    #     'c': 0,
-    #     'status': 'Braincell Counter: 0'
-    # })
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
