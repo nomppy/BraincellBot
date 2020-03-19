@@ -1,7 +1,7 @@
 import re
 
 from discord.ext import commands
-from mods import firestore, info
+from mods import firestore, info, vars_
 
 
 @commands.command()
@@ -44,5 +44,5 @@ def setup(bot):
         settings={
             'default': ['none', 'all'],
         }
-    )
+    ).export(vars_.info_)
     bot.add_command(whitelist)

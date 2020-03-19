@@ -2,7 +2,7 @@ import discord
 
 from mods.core import get_cat_link
 from discord.ext import commands
-from mods import firestore, info
+from mods import firestore, info, vars_
 
 
 @commands.command(aliases=['catpls', 'plscat', 'bestanimal', 'cat'])
@@ -21,6 +21,6 @@ def setup(bot):
         name='meow',
         brief='sends a random cat pic',
         usage='`meow`'
-    )
+    ).export(vars_.info_)
 
     bot.add_command(meow)

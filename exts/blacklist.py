@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from exts import whitelist
-from mods import info
+from mods import info, vars_
 
 
 @commands.command()
@@ -13,5 +13,10 @@ async def blacklist(ctx, command=None, user=None):
 
 
 def setup(bot):
+    info.Info(
+        name='blacklist',
+        brief='removes a user from the whitelist',
+        usage='`blacklist <user>`'
+    ).export(vars_.info_)
 
     bot.add_command(blacklist)

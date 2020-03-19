@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from mods import firestore, info
+from mods import firestore, info, vars_
 from mods.core import get_cat_link
 from mods.core import change_avatar
 
@@ -57,5 +57,6 @@ def setup(bot):
             'timer': int,
             'enabled': bool,
         }
-    )
+    ).export(vars_.info_)
+
     bot.add_command(newpfp)

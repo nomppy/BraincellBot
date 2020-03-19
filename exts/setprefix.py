@@ -1,6 +1,6 @@
 from discord.ext import commands
 
-from mods import firestore, info
+from mods import firestore, info, vars_
 
 
 @commands.command(aliases=['prefix'])
@@ -21,6 +21,6 @@ def setup(bot):
         name='setprefix',
         brief='change your prefix',
         usage='`[set]prefix <new_prefix>`'
-    )
+    ).export(vars_.info_)
 
     bot.add_command(setprefix)

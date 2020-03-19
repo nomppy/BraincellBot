@@ -1,6 +1,6 @@
 import random
 from discord.ext import commands
-from mods import info
+from mods import info, vars_
 
 
 @commands.command()
@@ -18,5 +18,6 @@ def setup(bot):
         name='alive',
         brief="this is for you to see if I'm alive",
         usage='`alive`',
-    )
+    ).export(vars_.info_)
+
     bot.add_command(alive)

@@ -1,7 +1,7 @@
 from discord.ext import commands
 from google.api_core.exceptions import NotFound
 
-from mods import firestore, info
+from mods import firestore, info, vars_
 
 
 @commands.command()
@@ -28,5 +28,5 @@ def setup(bot):
         brief='deactivates your account',
         description='call with no arguments to deactivate, append `-d` to delete all data',
         usage='`unregister [-d|delete]`'
-    )
+    ).export(vars_.info_)
     bot.add_command(unregister)

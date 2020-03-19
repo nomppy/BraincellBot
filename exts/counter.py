@@ -1,5 +1,5 @@
 from discord.ext import commands
-from mods import firestore
+from mods import firestore, vars_
 from mods.core import change_status
 from mods import info
 
@@ -53,5 +53,6 @@ def setup(bot):
             'template': str,
             'enabled': bool
         }
-    )
+    ).export(vars_.info_)
+
     bot.add_command(counter)
