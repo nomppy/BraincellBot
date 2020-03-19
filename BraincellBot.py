@@ -75,7 +75,8 @@ async def on_message(message):
 
     # TODO change regex to match the template in database
     if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}$", message.content):
-        await bot.get_command('counter')(await bot.get_context(message), user)
+        mentioned = message.mentions[0]
+        await bot.get_command('counter')(await bot.get_context(message), mentioned)
         return
 
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
