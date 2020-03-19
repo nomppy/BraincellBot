@@ -60,10 +60,10 @@ class Help(Info):
 
 class Settings(Info):
 
-    def __init__(self, name, fields_and_value: {str: []}):
+    def __init__(self, name, data: {str: []}):
         super().__init__(name)
-        self.fields = fields_and_value.keys()
-        self.dict = fields_and_value
+        self.fields = data.keys()
+        self.dict = data
 
     def __dict__(self):
         return {

@@ -75,37 +75,7 @@ async def on_message(message):
 
     # TODO change regex to match the template in database
     if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}$", message.content):
-        mentioned = message.mentions[0]
-        uid = str(mentioned.id)
-        mentioned_ = await firestore.get_user(uid)
-        counter_ = await firestore.get_command(uid, 'counter')
-        if not mentioned_:
-            await message.channel.send(f'The user you mentioned isn\'t registered.')
-            return
-        elif str(message.author.id) not in counter_['whitelist']:
-            await message.channel.send(f"You're not allowed to change {mentioned.name}'s counter. "
-                                       f"Ask them to add you to the whitelist with `whitelist <mention>`")
-            return
-        elif not counter_['enabled']:
-            await message.channel.send(f"{mentioned.name} currently has this command disabled. "
-                                       f"They can re-enable it with `settings counter enable`.")
-            return
-        count_ = counter_['c']
-        if 'braincells++' in message.content:
-            count_ += 1
-        else:
-            count_ -= 1
-        template = counter_['template']
-        await firestore.update_command(uid, 'counter', 'c', count_)
-        status = template.replace('$COUNTER$', str(count_))
-        await firestore.update_command(uid, 'counter', 'status', status)
-        if not mentioned_['self']:
-            resp = await change_status(mentioned_['token'], status)
-            if resp.status != 200:
-                print(resp)
-                await message.channel.send(f'Something wonky happened.')
-            return
-        await message.channel.send(f"I\'ve instructed their slave to change their status.")
+        await bot.get_command('counter')(await bot.get_context(message), user)
         return
 
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):

@@ -1,5 +1,6 @@
 from discord.ext import commands
 from mods import firestore
+from mods import info
 
 
 @commands.command()
@@ -26,4 +27,9 @@ async def settings(ctx, command=None, field=None, value=None):
 
 
 def setup(bot):
+    info.Help(
+        name='settings',
+        description='configure user-specific settings such as prefix, counter, whitelist',
+        usage='`settings [command] [option] [value]`'
+    ).export()
     bot.add_command(settings)
