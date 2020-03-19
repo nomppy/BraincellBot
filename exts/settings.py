@@ -10,8 +10,9 @@ async def settings(ctx, command=None, field=None, value=None):
     command_ = await firestore.get_command(uid, command)
         
     if not command:
-        await ctx.send(f"Here are commands that you can configure. \n"
-                       f"{vars_.info_.keys()}")
+        configurable = []
+        [configurable.append(key) for key in vars_.info_.keys() if vars_.info_[key].configurable()]
+        await ctx.send(f"Here are commands that you can configure.\n {configurable}")
         return
     elif not command_ or command not in vars_.info_.keys():
         await ctx.send("The command you entered could not be found.")

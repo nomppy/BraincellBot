@@ -12,7 +12,7 @@ class Info:
         _dict[self.name] = self
 
     def configurable(self):
-        return self.settings.keys() is not None
+        return self.settings is not None
 
     def get_command(self):
         return self
