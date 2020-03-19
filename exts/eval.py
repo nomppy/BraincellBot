@@ -8,6 +8,7 @@ import traceback
 from mods import admin
 from mods import token
 from mods import firestore
+from mods import info
 
 
 def cleanup_code(content):

@@ -4,6 +4,7 @@ from discord.ext import commands
 
 from mods import token
 from mods import firestore
+from mods import info
 
 
 async def _self_host(user):
@@ -168,4 +169,9 @@ class Register(commands.Cog):
 
 
 def setup(bot):
+    info.Help(
+        name='register',
+        description='Getting comfy with me so I can manage your stuffz.',
+        usage="Literally just `register`"
+    ).export()
     bot.add_cog(Register(bot))
