@@ -1,5 +1,6 @@
 import random
 from discord.ext import commands
+from mods import info
 
 
 @commands.command()
@@ -13,4 +14,9 @@ async def alive(ctx):
 
 
 def setup(bot):
+    info.Help(
+        name='alive',
+        description='see if the bot is alive',
+        usage='`alive`'
+    ).export()
     bot.add_command(alive)

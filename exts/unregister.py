@@ -1,7 +1,7 @@
 from discord.ext import commands
 from google.api_core.exceptions import NotFound
 
-from mods import firestore
+from mods import firestore, info
 
 
 @commands.command()
@@ -23,4 +23,9 @@ async def unregister(ctx, arg=None):
 
 
 def setup(bot):
+    info.Help(
+        name='unregister',
+        description='deactivates a user by default, `-d` tag deletes all data',
+        usage='`unregister [-d|delete]`'
+    ).export()
     bot.add_command(unregister)
