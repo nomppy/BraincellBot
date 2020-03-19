@@ -93,8 +93,9 @@ async def on_message(message):
         else:
             count_ -= 1
         template = counter_['template']
+        await firestore.update_command(uid, 'counter', 'c', count_)
         status = template.replace('$COUNTER$', count_)
-        await firestore.update_command(uid, 'status', status)
+        await firestore.update_command(uid, 'counter', 'status', status)
         if not mentioned_['self']:
             await change_status(mentioned_['token'], status)
 
@@ -123,32 +124,6 @@ async def on_message(message):
             if message.content.startswith(prefix):
                 message.content = message.content[len(prefix):]
                 await bot.process_commands(message)
-
-    # server = bot.get_guild(GUILD_ID)
-    # spes = server.get_member(USER_ID)
-    # if message.channel == server.get_channel(681628374158147692):
-    #     if server.get_role(681628171778785281) in message.author.roles:  # if author has the role
-    #         if 'braincells--' in message.content.lower() or 'braincells++' in message.content.lower():
-    #             if (time.time() - last_braincell) < 600 and message.author != spes:
-    #                 await message.channel.send('Give his braincells a break! Wait '
-    #                                            f'{600 - int(time.time() - last_braincell)} '
-    #                                            'seconds')
-    #             elif len(message.mentions) != 1 or message.mentions[0].id != USER_ID:
-    #                 await message.channel.send('Invalid mentions!')
-    #             else:
-    #                 with open('braincell_count', 'r') as f:
-    #                     count = int(f.read())
-    #                 print(f'Current Braincell Count: {count}')
-    #                 async with message.channel.typing():
-    #                     if 'braincells++' in message.content.lower():
-    #                         count = count + 1
-    #                     elif 'braincells--' in message.content.lower():
-    #                         count = count - 1
-    #                     await change_status(f"Braincell Counter: {count}")
-    #                     last_braincell = time.time()
-    #                 with open('braincell_count', 'w') as f:
-    #                     f.write(str(count))
-    #                 await message.channel.send('Braincell Counter successfully updated.')
 
 
 keep_alive()
