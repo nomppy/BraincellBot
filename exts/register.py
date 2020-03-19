@@ -2,22 +2,35 @@ import asyncio
 
 from discord.ext import commands
 
-from mods import token, vars_
-from mods import firestore
-from mods import info
+from mods import token, vars_, firestore, info
+
+
+async def _add_commands_settings(uid: str):
+    cmds = vars_.info_
+    for cmd in cmds:
+        if cmds[cmd].configurable():
+            defaults = cmds[cmd].get_defaults()
+            for field in defaults:
+                if defaults[field] == 'self':
+                    defaults[field] = [uid]
+            await firestore.update_command_fields(uid, cmd, defaults)
 
 
 async def _self_host(user):
     uid = str(user.id)
     custom_token = token.create_custom_token(uid).decode('utf-8')
     await firestore.update_user(uid, True, username=user.name, new_token=custom_token, prefix='b!')
-    await firestore.update_command_fields(uid, 'counter', {
-        'template': 'Braincell Counter: $COUNTER$',
-        'whitelist': uid,
-        'enabled': True,
-        'c': 0,
-        'status': 'Braincell Counter: 0'
-    })
+    await _add_commands_settings(uid)
+
+    # [await firestore.update_command_fields(uid, cmd, cmds[cmd].get_defaults()) for cmd in cmds]
+
+    # await firestore.update_command_fields(uid, 'counter', {
+    #     'template': 'Braincell Counter: $COUNTER$',
+    #     'whitelist': uid,
+    #     'enabled': True,
+    #     'c': 0,
+    #     'status': 'Braincell Counter: 0'
+    # })
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
@@ -169,6 +182,7 @@ class Register(commands.Cog):
                 email = await self._get_user_email(user)
                 pwd = await self._get_user_pwd(user)
                 await firestore.add_user(uid, username=user.name, self_=False, token=token_, email=email, pwd=pwd)
+                await _add_commands_settings(uid)
                 await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
                                 '`b!`\n '
                                 'If at anytime you need to change the information you entered or switch to '

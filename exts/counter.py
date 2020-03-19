@@ -49,9 +49,19 @@ def setup(bot):
         description='allows other people to increase or decrease the counter in your status',
         usage='`counter <user> [+|-]` or `<user> braincells[++|--]`',
         settings={
-            'default': ['none', 'all'],
+            'mode': ['none', 'all'],
             'template': 'any',
-            'enabled': None
+            'enabled': None,
+            'c': int,
+            'status': 'any',
+        },
+        defaults={
+            'mode': 'none',
+            'template': 'Braincell Counter: $COUNTER$',
+            'whitelist': 'self',
+            'enabled': True,
+            'c': 0,
+            'status': 'Braincell Counter: 0',
         }
     ).export(vars_.info_)
 

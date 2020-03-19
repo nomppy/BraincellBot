@@ -47,11 +47,6 @@ async def _write(path, data, merge=True):
     ref.set(data, merge=merge)
 
 
-async def _update(path, data):
-    ref = db.document(path)
-    ref.update(data)
-
-
 async def _delete(path):
     db.document(path).delete()
 
@@ -79,7 +74,7 @@ async def update_user(uid, self_, username=None, new_token=None, new_email=None,
         'prefix': prefix,
         'active': active
     }
-    await _update(path, data)
+    await _write(path, data)
 
 
 async def add_user(uid, self_, username=None, token=None, email=None, pwd=None, prefix='b!', active=True):

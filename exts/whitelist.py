@@ -33,7 +33,7 @@ async def whitelist(ctx, command=None, user=None, remove=False):
         return 'User removed from whitelist'
     whitelist_.append(uid)
     await firestore.update_command(uid_, command, 'whitelist', whitelist_)
-    ctx.send('User added to whitelist.')
+    await ctx.send('User added to whitelist.')
 
 
 def setup(bot):
@@ -41,8 +41,5 @@ def setup(bot):
         name='whitelist',
         brief='allow another user to use a command',
         usage='`whitelist <command> <user>`',
-        settings={
-            'default': ['none', 'all'],
-        }
     ).export(vars_.info_)
     bot.add_command(whitelist)

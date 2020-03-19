@@ -1,5 +1,8 @@
 class Info:
-    def __init__(self, name, brief, description=None, usage=None, settings: {str: str} = None):
+    def __init__(self, name, brief, description=None, usage=None,
+                 settings: {str: str} = None,
+                 defaults: {str: str} = None):
+
         if not description:
             description = brief
         self.name = name
@@ -7,6 +10,7 @@ class Info:
         self.description = description
         self.usage = usage
         self.settings = settings
+        self.default = defaults
 
     def export(self, _dict: dict):
         _dict[self.name] = self
@@ -27,6 +31,9 @@ class Info:
                 return False
         elif value not in self.settings[field]:
             return False
+
+    def get_defaults(self):
+        return self.default
 
     def get_command(self):
         return self

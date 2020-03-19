@@ -56,6 +56,10 @@ def setup(bot):
         settings={
             'timer': int,
             'enabled': None,
+        },
+        defaults={
+            'timer': 0,  # off,
+            'enabled': True,
         }
     ).export(vars_.info_)
 
