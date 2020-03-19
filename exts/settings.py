@@ -14,7 +14,7 @@ async def settings(ctx, command=None, field=None, value=None):
         [configurable.append(key) for key in vars_.info_.keys() if vars_.info_[key].configurable()]
         await ctx.send(f"Here are commands that you can configure.\n {configurable}")
         return
-    elif not command_ or command not in vars_.info_.keys():
+    elif command not in vars_.info_.keys():
         await ctx.send("The command you entered could not be found.")
         return
     elif command and not field:
@@ -26,12 +26,12 @@ async def settings(ctx, command=None, field=None, value=None):
     elif field not in vars_.info_[command].get_settings():
         await ctx.send(f"The specified setting does not exist. See `settings {command}` for available settings.")
         return
-    elif not vars_.info_[command].get_options(field) and \
-            'any' not in vars_.info_[command].get_options(field) and \
-            value not in vars_.info_[command].get_options(field):
+    elif not vars_.info_[command].validate_setting(field, value):
         await ctx.send("That's not a valid option for this setting")
         return
 
+    if vars_.info_[command].get_options(field) is None:
+        value = not command_[field]
     await firestore.update_command(uid, command, field, value)
 
 

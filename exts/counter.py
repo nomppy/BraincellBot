@@ -50,8 +50,8 @@ def setup(bot):
         usage='`counter <user> [+|-]` or `<user> braincells[++|--]`',
         settings={
             'default': ['none', 'all'],
-            'template': str,
-            'enabled': bool
+            'template': 'any',
+            'enabled': None
         }
     ).export(vars_.info_)
 

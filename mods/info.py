@@ -14,6 +14,20 @@ class Info:
     def configurable(self):
         return self.settings is not None
 
+    def validate_setting(self, field, value):
+        if field not in self.settings.keys():
+            return False
+        elif self.settings[field] is None or self.settings[field] == 'any':
+            return True
+        elif self.settings[field] == int:
+            try:
+                int(value)
+                return True
+            except ValueError:
+                return False
+        elif value not in self.settings[field]:
+            return False
+
     def get_command(self):
         return self
 

@@ -55,7 +55,7 @@ def setup(bot):
         usage='`newpfp [last|^|_]`',
         settings={
             'timer': int,
-            'enabled': bool,
+            'enabled': None,
         }
     ).export(vars_.info_)
 
