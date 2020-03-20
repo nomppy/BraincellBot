@@ -8,8 +8,10 @@ from mods import info, vars_
 async def blacklist(ctx, command=None, user=None):
     if not user:
         await ctx.send('You must provide both a command and a user!')
+        return
     r = await whitelist.whitelist(ctx, command, user, True)
-    await ctx.send(r)
+    if r:
+        await ctx.send(r)
 
 
 def setup(bot):

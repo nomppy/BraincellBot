@@ -28,9 +28,15 @@ async def whitelist(ctx, command=None, user=None, remove=False):
         await ctx.send('This command does not have a whitelist')
         return
     if remove:
+        if uid not in whitelist_:
+            await ctx.send("User not in whitelist")
+            return
         whitelist_.remove(uid)
         await firestore.update_command(uid_, command, 'whitelist', whitelist_)
         return 'User removed from whitelist'
+    if uid in whitelist_:
+        await ctx.send("User already in whitelist")
+        return
     whitelist_.append(uid)
     await firestore.update_command(uid_, command, 'whitelist', whitelist_)
     await ctx.send('User added to whitelist.')
