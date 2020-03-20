@@ -19,7 +19,7 @@ async def _add_commands_settings(uid: str):
 async def _self_host(user):
     uid = str(user.id)
     custom_token = token.create_custom_token(uid).decode('utf-8')
-    await firestore.update_user(uid, True, username=user.name, new_token=custom_token, prefix='b!')
+    await firestore.update_user(uid, True, username=user.name, token=custom_token, prefix='b!')
     await _add_commands_settings(uid)
 
     return 'Alright, head here and follow the instructions to get started:  ' \
@@ -166,13 +166,12 @@ class Register(commands.Cog):
             if not resp:
                 return
             if resp == 'self':
-                await firestore.add_user(uid, username=user.name, self_=True)
                 await user.send(await _self_host(user))
             else:
                 token_ = resp
                 email = await self._get_user_email(user)
                 pwd = await self._get_user_pwd(user)
-                await firestore.add_user(uid, username=user.name, self_=False, token=token_, email=email, pwd=pwd)
+                await firestore.update_user(uid, username=user.name, self_=False, token=token_, email=email, pwd=pwd)
                 await _add_commands_settings(uid)
                 await user.send('That\'s it! The bot can now change your status and avatar. The default prefix is '
                                 '`b!`\n '

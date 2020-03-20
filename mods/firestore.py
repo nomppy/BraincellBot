@@ -63,21 +63,7 @@ async def delete_collection(path):
         return 'Failed to delete collection'
 
 
-async def update_user(uid, self_, username=None, new_token=None, new_email=None, new_pwd=None, prefix=None, active=True):
-    path = f'users/{uid}'
-    data = {
-        'username': username,
-        'token': new_token,
-        'email': new_email,
-        'pwd': new_pwd,
-        'self': self_,
-        'prefix': prefix,
-        'active': active
-    }
-    await _write(path, data)
-
-
-async def add_user(uid, self_, username=None, token=None, email=None, pwd=None, prefix='b!', active=True):
+async def update_user(uid, self_, username=None, token=None, email=None, pwd=None, prefix=None, active=True):
     path = f'users/{uid}'
     data = {
         'username': username,
@@ -86,7 +72,10 @@ async def add_user(uid, self_, username=None, token=None, email=None, pwd=None, 
         'pwd': pwd,
         'self': self_,
         'prefix': prefix,
-        'active': active
+        'active': active,
+        'flag': False,
     }
     await _write(path, data)
+
+
 
