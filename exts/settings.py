@@ -32,7 +32,7 @@ async def settings(ctx, command=None, field=None, value=None):
 
     if vars_.info_[command].get_options(field) is None:
         value = not command_[field]
-    await firestore.update_command(uid, command, field, value)
+    await firestore.update_command_field(uid, command, field, value)
 
 
 def setup(bot):

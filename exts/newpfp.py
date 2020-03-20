@@ -19,8 +19,9 @@ async def newpfp(ctx, arg='random'):
 
         if user_['self']:
             # handle self-hosting here
-            await firestore.update_command(uid, 'newpfp', 'link_', await get_cat_link())
-            await ctx.send("I told your client to update your avatar")
+            await firestore.update_command_field(uid, 'newpfp', 'link_', await get_cat_link())
+            await firestore.update_user_field(uid, 'flag', True)
+            await ctx.send("I've told your slave to update your avatar")
             return
 
         result = await _new_avatar(ctx, user_, arg)

@@ -114,7 +114,7 @@ class Register(commands.Cog):
 
         async def _complete_user_info():
             if not user_['username']:
-                await firestore.update_field(uid, 'username', user.name)
+                await firestore.update_user_field(uid, 'username', user.name)
             await _send_current_info()
             resp_ = await self._get_user_reply(user)
             if not resp_:
@@ -124,19 +124,19 @@ class Register(commands.Cog):
                 await user.send(await _self_host(user))
             elif resp_ == 'token':
                 new_token = await self._get_user_token(user)
-                await firestore.update_field(uid, 'token', new_token)
+                await firestore.update_user_field(uid, 'token', new_token)
             elif resp_ == 'email':
                 new_email = await self._get_user_email(user)
-                await firestore.update_field(uid, 'email', new_email)
+                await firestore.update_user_field(uid, 'email', new_email)
             elif resp_ in ['pwd', 'password']:
                 new_pwd = await self._get_user_pwd(user)
-                await firestore.update_field(uid, 'pwd', new_pwd)
+                await firestore.update_user_field(uid, 'pwd', new_pwd)
             elif resp_ == 'prefix':
                 new_prefix = await self._get_user_prefix(user)
-                await firestore.update_field(uid, 'prefix', new_prefix)
+                await firestore.update_user_field(uid, 'prefix', new_prefix)
             elif resp_ == 'active':
                 curr = user_['active']
-                await firestore.update_field(uid, 'active', not curr)
+                await firestore.update_user_field(uid, 'active', not curr)
             await _complete_user_info()
 
         user_ = await firestore.get_user(uid)
@@ -156,7 +156,7 @@ class Register(commands.Cog):
                 else:  # account deactivated
                     await ctx.send('You seem to have deactivated your account, I will need to acquire your credentials '
                                    'again. (If you changed your prefix it has been reset to `b!`)')
-                    await firestore.update_field(uid, 'prefix', 'b!')
+                    await firestore.update_user_field(uid, 'prefix', 'b!')
                 await _complete_user_info()
 
         else:

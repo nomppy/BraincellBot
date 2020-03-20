@@ -28,9 +28,9 @@ async def counter(ctx, user):
     elif '--' in ctx.message.content:
         count_ -= 1
     template = counter_['template']
-    await firestore.update_command(uid, 'counter', 'c', count_)
+    await firestore.update_command_field(uid, 'counter', 'c', count_)
     status = template.replace('$COUNTER$', str(count_))
-    await firestore.update_command(uid, 'counter', 'status', status)
+    await firestore.update_command_field(uid, 'counter', 'status', status)
     if not user_['self']:
         resp = await change_status(user_['token'], status)
         if resp.status != 200:
@@ -38,6 +38,7 @@ async def counter(ctx, user):
         else:
             await ctx.send(f"I've updated {user.name}'s counter.")
         return
+    await firestore.update_user_field(uid, 'flag', True)
     await ctx.send("I've instructed their slave to change their status.")
     return
 

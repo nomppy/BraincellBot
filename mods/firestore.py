@@ -3,7 +3,7 @@ import json
 
 import firebase_admin
 from firebase_admin import firestore
-from Naked.toolshed.shell import execute_js, muterun_js
+from Naked.toolshed.shell import execute_js
 
 
 # avoid initializing multiple instances of the same app
@@ -16,11 +16,11 @@ except ValueError:
 db = firestore.client(app)
 
 
-async def update_field(uid: str, field, value):
+async def update_user_field(uid: str, field, value):
     await _write(f'users/{uid}', {field: value})
 
 
-async def update_command(uid: str, command: str, field, value):
+async def update_command_field(uid: str, command: str, field, value):
     await _write(f'users/{uid}/commands/{command}', {field: value})
 
 
