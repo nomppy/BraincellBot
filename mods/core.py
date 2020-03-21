@@ -1,12 +1,8 @@
 import json
 import aiohttp
-from dotenv import load_dotenv
-import os
 import base64
 
 
-load_dotenv()
-token = os.getenv('USER_TOKEN')
 headers = {
     'authority': 'discordapp.com',
     'accept-language': 'en-US',

@@ -3,6 +3,9 @@ import asyncio
 from discord.ext import commands
 
 from mods import token, vars_, firestore, info
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 
 async def _add_commands_settings(uid: str):
@@ -25,7 +28,7 @@ async def _self_host(user):
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
-           f'and your id is {uid}' \
+           f'Your id is: `{uid}`\n The API key is: `{os.getenv("GOOGLE_API_KEY")}`)' \
            'Keep this token safe!'
 
 
