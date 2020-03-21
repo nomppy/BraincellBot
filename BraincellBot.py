@@ -14,9 +14,9 @@ from keep_alive import keep_alive
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 mods = vars_.mods
 ignore = vars_.ignore
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 # TODO write server code to receive register requests
