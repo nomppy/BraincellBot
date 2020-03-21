@@ -27,9 +27,8 @@ async def _self_host(user):
 
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
-           f'Your unique token is ```{custom_token}```' \
-           f'Your id is: `{uid}`\n The API key is: `{os.getenv("GOOGLE_API_KEY")}`)' \
-           'Keep this token safe!'
+           f'Your unique token is ```{custom_token}``` ... Keep this token safe!' \
+           f'Your id is: `{uid}`\n The API key is: `{os.getenv("GOOGLE_API_KEY")}`)'
 
 
 class Register(commands.Cog):
