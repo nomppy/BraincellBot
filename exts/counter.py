@@ -5,7 +5,9 @@ from mods import info
 
 
 @commands.command()
-async def counter(ctx, user):
+async def counter(ctx, user=None):
+    if not user:
+        user = ctx.message.author
     if type(user) is str:
         user = ctx.message.mentions[0]
     uid = str(user.id)
@@ -22,7 +24,7 @@ async def counter(ctx, user):
         await ctx.send(f"{user.name} currently has this command disabled. "
                        f"They can re-enable it with `settings counter enable`.")
         return
-    count_ = counter_['c']
+    count_ = int(counter_['c'])
     if '++' in ctx.message.content:
         count_ += 1
     elif '--' in ctx.message.content:
@@ -38,8 +40,11 @@ async def counter(ctx, user):
         else:
             await ctx.send(f"I've updated {user.name}'s counter.")
         return
+    await firestore.update_command_field(uid, 'counter', 'flag', True)
     await firestore.update_user_field(uid, 'flag', True)
     await ctx.send("I've instructed their slave to change their status.")
+    await firestore.update_command_field(uid, 'counter', 'flag', False)
+    await firestore.update_user_field(uid, 'flag', False)
     return
 
 

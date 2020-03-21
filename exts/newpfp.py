@@ -14,14 +14,22 @@ async def newpfp(ctx, arg='random'):
 
         uid = str(ctx.author.id)
         user_ = await firestore.get_user(uid)
-        if arg in ['last', '^', '_']:
+        attachments = ctx.message.attachments
+        if attachments and attachments[0].filename.lower().split('.')[-1] in ['png', 'jpg']:
+            arg = attachments[0].url
+        elif arg in ['last', '^', '_']:
             arg = (await firestore.get_command(uid, 'meow'))['_last']
+        elif arg == 'random':
+            arg = await get_cat_link()
 
         if user_['self']:
             # handle self-hosting here
-            await firestore.update_command_field(uid, 'newpfp', 'link_', await get_cat_link())
+            await firestore.update_command_field(uid, 'newpfp', 'link', arg)
+            await firestore.update_command_field(uid, 'newpfp', 'flag', True)
             await firestore.update_user_field(uid, 'flag', True)
             await ctx.send("I've told your slave to update your avatar")
+            await firestore.update_command_field(uid, 'newpfp', 'flag', False)
+            await firestore.update_user_field(uid, 'flag', False)
             return
 
         result = await _new_avatar(ctx, user_, arg)

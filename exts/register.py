@@ -25,6 +25,7 @@ async def _self_host(user):
     return 'Alright, head here and follow the instructions to get started:  ' \
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}```' \
+           f'and your id is {uid}' \
            'Keep this token safe!'
 
 
