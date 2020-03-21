@@ -4,7 +4,7 @@ from mods import token, info, vars_
 
 @commands.command()
 async def refresh(ctx):
-    token_ = token.create_custom_token(str(ctx.author.id)).decode('utf-8')
+    token_ = token.refresh_custom_token(str(ctx.author.id)).decode('utf-8')
     await ctx.author.send('Here\'s your freshly minted token!'
                           f'```{token_}```')
 
