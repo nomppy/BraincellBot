@@ -1,6 +1,8 @@
 .env
 .idea/
 braincell_count
+node_modules/
 
+*-workspace
 *.json
 *.pyc

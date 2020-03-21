@@ -1,9 +1,12 @@
 import random
 from discord.ext import commands
+from mods import info, vars_
 
 
 @commands.command()
 async def alive(ctx):
+    if ctx.author.bot:
+        return
     resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(',
             'We\'re all gonna die anyway',
             'What\'s the point?']
@@ -11,4 +14,10 @@ async def alive(ctx):
 
 
 def setup(bot):
+    info.Info(
+        name='alive',
+        brief="this is for you to see if I'm alive",
+        usage='`alive`',
+    ).export(vars_.info_)
+
     bot.add_command(alive)

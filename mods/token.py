@@ -20,3 +20,11 @@ def create_custom_token(uid: str):
 def refresh_custom_token(uid):
     auth.revoke_refresh_tokens(uid, app=app)
     return create_custom_token(uid)
+
+
+def revoke_refresh_tokens(uid):
+    auth.revoke_refresh_tokens(uid, app=app)
+
+
+def delete_user(uid):
+    auth.delete_user(uid, app=app)

@@ -1,18 +1,29 @@
 import importlib
+import os
 
 
-async def reload_all(bot, mods):
-    queue_mods = []
-    queue_exts = []
-    for mod in mods:
-        queue_mods.append(mods[mod])
-    for ext in bot.extensions:
-        queue_exts.append(ext)
-    for mod in queue_mods:
-        await _reload_mod(mod)
-    for ext in queue_exts:
-        await _reload_ext(bot, ext)
-    return 'Reloaded all extension/modules.'
+def cleanup_code(content):
+    if content.startswith('```') and content.endswith('```'):
+        return '\n'.join(content.split('\n')[1:-1])
+
+    return content.strip('` \n`')
+
+
+async def reload_all(bot, mods, ignore):
+    # load all commands/cogs
+    for file in os.listdir('./exts/'):
+        if file.endswith('.py') and file not in ignore:
+            ext = file.split('.')[0]
+            st = await reload_load(ext, bot=bot)
+            print(st)
+    # load all non-command functions
+    for file in os.listdir('./mods/'):
+        if file.endswith('.py') and file not in ignore:
+            mod = file.split('.')[0]
+            mod_, st = await reload_load(mod, mods=mods)
+            mods[mod] = mod_
+            print(st)
+    return 'Reloaded all mods/exts'
 
 
 async def reload_load(modext, mods=None, bot=None):
@@ -45,7 +56,7 @@ async def _reload_mod(mod):
 
 async def _load_ext(bot, ext):
     bot.load_extension(f'exts.{ext}')
-    return f'Loaded extension: {ext}'
+    return f'Loaded extension: **{ext}**'
 
 
 async def _load_mod(mod):

@@ -1,15 +1,10 @@
 import json
 import aiohttp
-from dotenv import load_dotenv
-import os
 import base64
 
 
-load_dotenv()
-token = os.getenv('USER_TOKEN')
 headers = {
     'authority': 'discordapp.com',
-    'authorization': token,
     'accept-language': 'en-US',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -24,7 +19,7 @@ headers = {
 }
 
 
-async def change_avatar(img_link):
+async def change_avatar(user_: dict, img_link):
     file_ext = img_link.split('.')[-1]
     if file_ext != 'png' and file_ext != 'jpg':
         return 'Image type not supported.'
@@ -32,10 +27,11 @@ async def change_avatar(img_link):
     async with aiohttp.ClientSession() as session:
         resp = await session.get(img_link)
         img_b64 = base64.b64encode(await resp.read()).decode()
+
         data = {
-            'username': os.getenv('USER_NAME'),
-            'email': os.getenv('USER_EMAIL'),
-            'password': os.getenv('USER_PASSWORD'),
+            'username': user_['username'],
+            'email': user_['email'],
+            'password': user_['pwd'],
             'avatar': f'data:{resp.content_type};base64,{img_b64}',
             'discriminator': None,
             'new_password': None
@@ -50,12 +46,13 @@ async def change_avatar(img_link):
             return 'Something funky wonky happened :('
 
 
-async def change_status(message):
+async def change_status(token_, message):
     status = {
         'custom_status': {
             'text': message
         }
     }
+    headers['authorization'] = token_
     status = json.dumps(status, separators=(',', ':'))
     async with aiohttp.ClientSession() as session:
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
