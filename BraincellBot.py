@@ -16,12 +16,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
 mods = vars_.mods
 ignore = vars_.ignore
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-
-
-# TODO write server code to receive register requests
-# TODO server code to write to database
-# TODO replace messages with embeds
+BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 
 
 @commands.command()

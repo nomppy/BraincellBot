@@ -4,8 +4,6 @@ import json
 import firebase_admin
 from firebase_admin import firestore
 from Naked.toolshed.shell import execute_js
-
-
 # avoid initializing multiple instances of the same app
 try:
     app = firebase_admin.get_app('firestore')
