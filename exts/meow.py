@@ -7,6 +7,7 @@ from mods import firestore, info, vars_
 
 @commands.command(aliases=['catpls', 'plscat', 'bestanimal', 'cat'])
 async def meow(ctx):
+    await ctx.send('test')
     if ctx.author.bot:
         return
 
