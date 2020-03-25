@@ -3,6 +3,7 @@ import re
 import time
 
 from discord.ext import commands
+from discord.ext.commands import CommandNotFound
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -90,7 +91,11 @@ async def on_message(message):
             prefix = user_['prefix']
             if message.content.startswith(prefix):
                 message.content = message.content[len(prefix):]
-                await bot.process_commands(message)
+                try:
+                    await bot.process_commands(message)
+                except CommandNotFound:
+                    await message.channel.send("That command doesn't exist.")
+                    return
 
 
 bot.run(BOT_TOKEN)
