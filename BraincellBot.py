@@ -64,7 +64,7 @@ async def on_message(message):
     user_ = await firestore.get_user(uid)
 
     # TODO change regex to match the template in database
-    if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}$", message.content):
+    if re.match(r"^<@!?[0-9]+> braincells[+\-]{2}", message.content):
         mentioned = message.mentions[0]
         await bot.get_command('counter')(await bot.get_context(message), mentioned)
         return
