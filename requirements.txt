@@ -5,3 +5,4 @@ python-dotenv
 requests
 discord.py
 flask
+firebase-admin
