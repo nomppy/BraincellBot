@@ -7,7 +7,7 @@ from discord.ext import commands
 @commands.is_owner()
 async def restart(ctx):
     await ctx.send('Restarting...')
-    os.system('./restart_bot.bash')
+    os.system('./restart_bot.bash & disown')
 
 
 def setup(bot):
