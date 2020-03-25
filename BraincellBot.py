@@ -10,7 +10,6 @@ load_dotenv()
 
 from mods import firestore, vars_
 from mods import admin
-from keep_alive import keep_alive
 
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
@@ -18,11 +17,6 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 mods = vars_.mods
 ignore = vars_.ignore
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-
-
-# TODO write server code to receive register requests
-# TODO server code to write to database
-# TODO replace messages with embeds
 
 
 @commands.command()
@@ -104,5 +98,4 @@ async def on_message(message):
                     return
 
 
-keep_alive()
 bot.run(BOT_TOKEN)
