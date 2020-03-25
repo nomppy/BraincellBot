@@ -36,6 +36,7 @@ async def change_avatar(user_: dict, img_link):
             'discriminator': None,
             'new_password': None
         }
+        headers['authorization'] = user_['token']
         data = json.dumps(data, separators=(',', ':'))
         response = await session.patch('https://discordapp.com/api/v6/users/@me',
                                        headers=headers,
