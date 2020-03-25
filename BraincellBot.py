@@ -9,14 +9,13 @@ load_dotenv()
 
 from mods import firestore, vars_
 from mods import admin
-from keep_alive import keep_alive
 
 BOT_PREFIX = 'b!'
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
 mods = vars_.mods
 ignore = vars_.ignore
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 @commands.command()
@@ -94,5 +93,4 @@ async def on_message(message):
                 await bot.process_commands(message)
 
 
-keep_alive()
 bot.run(BOT_TOKEN)
