@@ -6,3 +6,5 @@ requests
 discord.py
 flask
 firebase-admin
+google-cloud-monitoring
+google-cloud-firestore
