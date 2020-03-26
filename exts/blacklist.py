@@ -18,7 +18,8 @@ def setup(bot):
     info.Info(
         name='blacklist',
         brief='removes a user from the whitelist',
-        usage='`blacklist <user>`'
+        usage='`blacklist <user>`',
+        category='Access Control'
     ).export(vars_.info_)
 
     bot.add_command(blacklist)

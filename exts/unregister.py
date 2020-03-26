@@ -27,6 +27,7 @@ def setup(bot):
         name='unregister',
         brief='deactivates your account',
         description='call with no arguments to deactivate, append `-d` to delete all data',
-        usage='`unregister [-d|delete]`'
+        usage='`unregister [-d|delete]`',
+        category='Account'
     ).export(vars_.info_)
     bot.add_command(unregister)

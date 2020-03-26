@@ -62,6 +62,7 @@ def setup(bot):
         brief='changes your avatar to a random cat',
         description='use `settings newpfp timer <minutes>` to set a timer',
         usage='`newpfp [last|^|_]`',
+        category='Core',
         settings={
             'timer': int,
             'enabled': None,

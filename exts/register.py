@@ -188,7 +188,8 @@ def setup(bot):
         name='register',
         brief='register with bot',
         description='register with the bot to use its functions, either self-host or provide token/email/pwd',
-        usage='`b!register`'
+        usage='`b!register`',
+        category='Account',
     ).export(vars_.info_)
 
     bot.add_cog(Register(bot))

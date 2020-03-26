@@ -54,6 +54,7 @@ def setup(bot):
         brief='counts things',
         description='allows other people to increase or decrease the counter in your status',
         usage='`counter <user> [+|-]` or `<user> braincells[++|--]`',
+        category='Core',
         settings={
             'mode': ['none', 'all'],
             'template': 'any',

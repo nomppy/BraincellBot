@@ -47,5 +47,6 @@ def setup(bot):
         name='whitelist',
         brief='allow another user to use a command',
         usage='`whitelist <command> <user>`',
+        category='Access Control',
     ).export(vars_.info_)
     bot.add_command(whitelist)

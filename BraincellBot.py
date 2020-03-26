@@ -2,6 +2,7 @@ import os
 import re
 import time
 
+import discord
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
 from dotenv import load_dotenv
@@ -22,20 +23,34 @@ BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 @commands.command()
 @commands.is_owner()
 async def reload(ctx, modext=None):
+    st = discord.Embed(
+        title='Reload',
+    ).set_thumbnail(url=bot.user.avatar_url)
     if modext in ['-a', 'all', '--all']:
-        st = await admin.reload_all(bot, mods, ignore)
+        st.description = await admin.reload_all(bot, mods, ignore)
+        st.colour = vars_.colour_success
     elif not modext:
-        st = 'TODO: send list of modules/extensions here'
+        st.description = "Here's a list of reloadable modules/extensions"
+        st.add_field(name='field1', value='value1')
+        st.add_field(name='field2', value='value2')
+        st.add_field(name='field1', value='value1')
+        st.add_field(name='field1', value='value1')
+        st.add_field(name='field1', value='value1')
+        st.set_footer(text='footer text', icon_url=bot.user.avatar_url)
+        st.colour = bot.user.colour
     else:
         try:
-            mods[modext], st = await admin.reload_load(modext, mods=mods)
+            mods[modext], st.description = await admin.reload_load(modext, mods=mods)
+            st.colour = vars_.colour_success
         except ModuleNotFoundError:
             try:
-                st = await admin.reload_load(modext, bot=bot)
+                st.description = await admin.reload_load(modext, bot=bot)
+                st.colour = vars_.colour_success
             except commands.ExtensionNotFound:
-                st = f'Cannot find {modext}'
+                st.description = f'Cannot find {modext}'
+                st.colour = vars_.colour_error
 
-    await ctx.send(st)
+    await ctx.send(embed=st)
 
 
 bot.add_command(reload)

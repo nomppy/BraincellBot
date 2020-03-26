@@ -20,7 +20,8 @@ def setup(bot):
     info.Info(
         name='meow',
         brief='sends a random cat pic',
-        usage='`meow`'
+        usage='`meow`',
+        category='Fun',
     ).export(vars_.info_)
 
     bot.add_command(meow)
