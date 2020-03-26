@@ -49,7 +49,8 @@ class Register(commands.Cog):
         # TODO check if entered token is plausible
         await user.send(
             'Enter your discord token here, your token is required for the bot to change your status message.\n'
-            'So you can enter `none` if you dont want that function.')
+            'So you can enter `none` if you dont want that function. If you don\'t know how to obtain your token: '
+            '<https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs>')
         resp = await self._get_user_reply(user)
         if resp == 'none':
             return None
