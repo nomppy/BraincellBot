@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from mods import firestore, vars_
 from mods.core import change_status
@@ -6,6 +7,9 @@ from mods import info
 
 @commands.command()
 async def counter(ctx, user=None):
+    async def send():
+        await ctx.send(embed=embed)
+
     if not user:
         user = ctx.message.author
     if type(user) is str:
@@ -13,16 +17,23 @@ async def counter(ctx, user=None):
     uid = str(user.id)
     user_ = await firestore.get_user(uid)
     counter_ = await firestore.get_command(uid, 'counter')
+    embed = discord.Embed()
     if not user_:
-        await ctx.send(f'The user you mentioned isn\'t registered.')
+        embed.description = "The user you mentioned isn't registered"
+        embed.colour = vars_.colour_error
+        await send()
         return
     elif str(ctx.author.id) not in counter_['whitelist']:
-        await ctx.send(f"You're not allowed to change {user.name}'s counter. "
-                       f"Ask them to add you to the whitelist with `whitelist <mention>`")
+        embed.description = f"You're not allowed to change {user.name}'s counter. " \
+                            f"Ask them to add you to the whitelist with `whitelist <mention>`"
+        embed.colour = colour = vars_.colour_error
+        await send()
         return
     elif not counter_['enabled']:
-        await ctx.send(f"{user.name} currently has this command disabled. "
-                       f"They can re-enable it with `settings counter enable`.")
+        embed.description = f"{user.name} currently has this command disabled. " \
+                            f"They can re-enable it with `settings counter enable`."
+        embed.colour = vars_.colour_error
+        await send()
         return
     count_ = int(counter_['c'])
     if '++' in ctx.message.content:
@@ -36,9 +47,13 @@ async def counter(ctx, user=None):
     if not user_['self']:
         resp = await change_status(user_['token'], status)
         if resp.status != 200:
-            await ctx.send("Something wonky happened.")
+            embed.description = 'Something wonky happened'
+            embed.colour = vars_.colour_error
+            await send()
+            return
         else:
-            await ctx.send(f"I've updated {user.name}'s counter.")
+            embed.description = f"I've updated {user.name}'s counter."
+            await send()
         return
     await firestore.update_command_field(uid, 'counter', 'flag', True)
     await firestore.update_user_field(uid, 'flag', True)
