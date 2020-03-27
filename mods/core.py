@@ -22,7 +22,7 @@ headers = {
 async def change_avatar(user_: dict, img_link):
     file_ext = img_link.split('.')[-1]
     if file_ext != 'png' and file_ext != 'jpg':
-        return 'Image type not supported.'
+        return 'Image type not supported.', False
 
     async with aiohttp.ClientSession() as session:
         resp = await session.get(img_link)
@@ -41,10 +41,11 @@ async def change_avatar(user_: dict, img_link):
         response = await session.patch('https://discordapp.com/api/v6/users/@me',
                                        headers=headers,
                                        data=data)
+        await session.close()
         if response.status == 200:
-            return 'Avatar successfully updated.'
+            return 'Avatar successfully updated.', True
         else:
-            return 'Something funky wonky happened :('
+            return 'Something funky wonky happened :(', False
 
 
 async def change_status(token_, message):
@@ -59,6 +60,7 @@ async def change_status(token_, message):
         response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
                                        headers=headers,
                                        data=status)
+        await session.close()
         return response
 
 
@@ -69,5 +71,7 @@ async def get_cat_link():
             response = await session.get('https://api.thecatapi.com/v1/images/search')
             resp_json = await response.json()
             image_link = resp_json[0]['url']
+            await session.close()
             if image_link[-3:] in ['jpg', 'png']:
                 return image_link
+            return
