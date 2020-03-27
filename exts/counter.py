@@ -17,7 +17,7 @@ async def counter(ctx, user=None):
     uid = str(user.id)
     user_ = await firestore.get_user(uid)
     counter_ = await firestore.get_command(uid, 'counter')
-    embed = discord.Embed()
+    embed = discord.Embed(title='Counter')
     if not user_:
         embed.description = "The user you mentioned isn't registered"
         embed.colour = vars_.colour_error
@@ -52,12 +52,16 @@ async def counter(ctx, user=None):
             await send()
             return
         else:
-            embed.description = f"I've updated {user.name}'s counter."
+            embed.description = f"I've updated {user.name}'s counter"
+            embed.colour = vars_.colour_success
             await send()
+            return
         return
     await firestore.update_command_field(uid, 'counter', 'flag', True)
     await firestore.update_user_field(uid, 'flag', True)
-    await ctx.send("I've instructed their slave to change their status.")
+    embed.description = "I've instructed their slave to change their status"
+    embed.description = vars_.colour_success
+    await send()
     await firestore.update_command_field(uid, 'counter', 'flag', False)
     await firestore.update_user_field(uid, 'flag', False)
     return
