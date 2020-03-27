@@ -1,44 +1,67 @@
 import re
 
+import discord
 from discord.ext import commands
 from mods import firestore, info, vars_
 
 
 @commands.command()
 async def whitelist(ctx, command=None, user=None, remove=False):
+    async def send():
+        await ctx.send(embed=embed)
+
+    embed = discord.Embed(title='Whitelist')
+    if not command:
+        embed.description = 'You must provide at least a command'
+        embed.colour = vars_.colour_error
+        await send()
+        return
     if not user:
-        await ctx.send('You must provide both a command and a user!')
+        embed.description = 'TODO send whitelist for command here'
+        embed.colour = vars_.colour_warning
+        await send()
         return
     match = re.search(r"[0-9]+", user)
     if match:
         uid = match.group(0)
     else:
-        await ctx.send('Invalid mention.')
+        embed.description = 'Invalid user.'
+        embed.colour = vars_.colour_error
+        await send()
         return
     uid_ = str(ctx.author.id)
     command_ = await firestore.get_command(uid_, command)
     if not command_:
-        await ctx.send('This command does not exist')
+        embed.description = 'Command does not exist'
+        embed.colour = vars_.colour_error
+        await send()
         return
 
     whitelist_ = command_['whitelist']
 
     if not whitelist_:
-        await ctx.send('This command does not have a whitelist')
+        embed.description = 'Command does not have whitelist'
+        embed.colour = vars_.colour_warning
+        await send()
         return
     if remove:
         if uid not in whitelist_:
-            await ctx.send("User not in whitelist")
-            return
+            embed.description = 'User not in whitelist'
+            embed.colour = vars_.colour_error
+            await send()
         whitelist_.remove(uid)
         await firestore.update_command_field(uid_, command, 'whitelist', whitelist_)
         return 'User removed from whitelist'
     if uid in whitelist_:
-        await ctx.send("User already in whitelist")
+        embed.description = 'User already in whitelist'
+        embed.colour = vars_.colour_warning
+        await send()
         return
     whitelist_.append(uid)
     await firestore.update_command_field(uid_, command, 'whitelist', whitelist_)
-    await ctx.send('User added to whitelist.')
+    embed.description = 'User added to whitelist'
+    embed.colour = vars_.colour_success
+    await send()
 
 
 def setup(bot):
