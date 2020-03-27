@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 
-from mods import vars_
+from mods import vars_, info
 
 
 class Avatar(commands.Cog):
@@ -41,4 +41,10 @@ class Avatar(commands.Cog):
 
 
 def setup(bot):
+    info.Info(
+        name='avatar',
+        brief="gets someone's avatar",
+        category='Info',
+        usage='`avatar [user]`'
+    ).export(vars_.info_)
     bot.add_cog(Avatar(bot))

@@ -6,7 +6,7 @@ def get_commands(category: str) -> list:
 
 
 class Info:
-    def __init__(self, name, brief, category='Miscellaneous', description=None, usage=None,
+    def __init__(self, name, brief, category='Miscellaneous', description=None, usage=None, aliases: list = None,
                  settings: {str: str} = None,
                  defaults: {str: str} = None):
 
@@ -17,6 +17,7 @@ class Info:
         self.category = category
         self.description = description
         self.usage = usage
+        self.aliases = aliases
         self.settings = settings
         self.default = defaults
 

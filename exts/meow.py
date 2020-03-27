@@ -4,8 +4,10 @@ from mods.core import get_cat_link
 from discord.ext import commands
 from mods import firestore, info, vars_
 
+aliases = ['catpls', 'plscat', 'bestanimal', 'cat']
 
-@commands.command(aliases=['catpls', 'plscat', 'bestanimal', 'cat'])
+
+@commands.command(aliases=aliases)
 async def meow(ctx):
     if ctx.author.bot:
         return
@@ -22,6 +24,7 @@ def setup(bot):
         brief='sends a random cat pic',
         usage='`meow`',
         category='Fun',
+        aliases=aliases
     ).export(vars_.info_)
 
     bot.add_command(meow)
