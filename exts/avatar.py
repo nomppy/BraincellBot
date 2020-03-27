@@ -33,10 +33,10 @@ class Avatar(commands.Cog):
             uid = match.group(0)
         else:
             return
-        try:
-            avatar_url = (await self.bot.fetch_user(uid)).avatar_url
-        except discord.errors.HTTPException:
+        user = self.bot.get_user(uid)
+        if not user:
             return
+        avatar_url = user.avatar_url
         return avatar_url
 
 
