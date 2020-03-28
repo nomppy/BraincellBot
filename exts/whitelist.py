@@ -42,6 +42,9 @@ async def whitelist(ctx, command=None, user=None, remove=False):
                         await firestore.update_command_field(uid_, command, 'whitelist', whitelist)
                         embed.description = 'User added to whitelist'
                         embed.colour = vars_.colour_success
+            else:
+                embed.description = 'Invalid user'
+                embed.colour = vars_.colour_error
     ctx.send(embed=embed)
 
 
