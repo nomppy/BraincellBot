@@ -56,7 +56,6 @@ async def counter(ctx, user=None):
             embed.colour = vars_.colour_success
             await send()
             return
-        return
     await firestore.update_command_field(uid, 'counter', 'flag', True)
     await firestore.update_user_field(uid, 'flag', True)
     embed.description = "I've instructed their slave to change their status"

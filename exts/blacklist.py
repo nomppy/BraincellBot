@@ -8,14 +8,13 @@ from mods import info, vars_
 @commands.command()
 async def blacklist(ctx, command=None, user=None):
     embed = discord.Embed(title='Blacklist')
-    if not user:
+    if user:
+        r = await whitelist.whitelist(ctx, command, user, True)
+        embed.colour = vars_.colour_success
+        embed.description = r
+    else:
         embed.colour = vars_.colour_error
-        embed.description = 'You must provide a command.'
-        await ctx.send(embed=embed)
-        return
-    r = await whitelist.whitelist(ctx, command, user, True)
-    embed.colour = vars_.colour_success
-    embed.description = r
+        embed.description = 'You must provide a command name'
     await ctx.send(embed=embed)
 
 
