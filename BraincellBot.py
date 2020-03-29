@@ -63,6 +63,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     await admin.reload_all(bot, mods, ignore)
+    await bot.get_user(int(os.getenv('OWNER'))).send("I'm online!")
 
 
 last_braincell = time.mktime(time.gmtime(0))
