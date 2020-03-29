@@ -44,18 +44,21 @@ class Settings(commands.Cog):
             embed.description = "Command does not exist"
             embed.colour = vars_.colour_error
         elif command and not field or command and field not in _commands[command].get_settings():
+            embed.title = f'Settings - {command}'
             embed.description = f"These are the available settings for {command}"
             embed = await self._embed_available_settings(_commands[command], embed)
         elif not command or not field or not value:
             embed.description = "Incorrect syntax, see `help settings`"
             embed.colour = vars_.colour_error
         elif not _commands[command].validate_setting(field, value):
+            embed.title = f'Settings - {command}'
             embed.description = "That isn't a valid option for this setting"
             embed.colour = vars_.colour_error
         else:
             if _commands[command].get_options(field) is None:
                 value = not command_[field]
             await firestore.update_command_field(uid, command, field, value)
+            embed.title = f'Settings - {command}'
             embed.description = f"I've updated {field}'s value to {value}"
             embed.colour = vars_.colour_success
         await ctx.send(embed=embed)
