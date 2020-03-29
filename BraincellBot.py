@@ -17,7 +17,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
 
 mods = vars_.mods
 ignore = vars_.ignore
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 @commands.command()
