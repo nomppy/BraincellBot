@@ -25,7 +25,7 @@ BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 async def reload(ctx, modext=None):
     st = discord.Embed(
         title='Reload',
-    ).set_thumbnail(url=bot.user.avatar_url)
+    ).set_thumbnail(url=bot.user.avatar_url).set_footer(text=vars_.default_footer_text)
     if modext in ['-a', 'all', '--all']:
         st.description = await admin.reload_all(bot, mods, ignore)
         st.colour = vars_.colour_success
@@ -38,7 +38,7 @@ async def reload(ctx, modext=None):
             st.add_field(name=category, value=_, inline=False)
         _ = ', '.join([str(mod) for mod in vars_.mods if str(mod) != '_'])
         st.add_field(name='Modules', value=_, inline=False)
-        st.colour = bot.user.colour
+        st.colour = ctx.guild.me.colour
     else:
         try:
             mods[modext], st.description = await admin.reload_load(modext, mods=mods)
