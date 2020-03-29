@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from google.api_core.exceptions import NotFound
 
@@ -8,18 +9,24 @@ from mods import firestore, info, vars_
 async def unregister(ctx, arg=None):
     user = ctx.author
     uid = str(user.id)
+    embed = discord.Embed(title='Unregister')
     try:
         if arg in ['-d', 'delete']:
             await firestore.delete_user(uid)
-            st = 'I have deleted all records of your account.'
+            embed.description = 'I have deleted all records of your account.'
+            embed.colour = vars_.colour_success
         else:
-            st = 'Your account has been deactivated. '\
+            embed.description = 'Your account has been deactivated. '\
                  'I still have all your preferences saved should you like to reactive your account.\n ' \
-                 'Run `unregister -d` to completely delete your account.'
+                 'Run `unregister -d` to completely delete your account.\n ' \
+                 'To reactivate your account, run `b!register` again.'
+            embed.colour = vars_.colour_warning
             await firestore.update_user(uid, self_=False, active=False)
-        await ctx.send(st)
+        await ctx.send(embed=embed)
     except NotFound:
-        await ctx.send('Your account couldn\'t be found.')
+        embed.colour = vars_.colour_error
+        embed.description = "Your account couldn't be found"
+        await ctx.send(embed=embed)
 
 
 def setup(bot):
