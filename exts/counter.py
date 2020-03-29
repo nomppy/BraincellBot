@@ -79,8 +79,8 @@ def setup(bot):
         category='Core',
         settings={
             'template': 'any',
-            'enabled': None,
-            'c': int,
+            'enabled': 'none',
+            'c': 'int',
             'status': 'any',
         },
         defaults={

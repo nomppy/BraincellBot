@@ -1,14 +1,21 @@
 from mods import vars_
 
 
-def get_commands(category: str) -> list:
-    return vars_.info_[category].keys()
+def get_commands(category: str) -> dict:
+    return vars_.info_[category]
+
+
+def get_all_commands() -> dict:
+    commands = {}
+    [commands.setdefault(key, command) for category in vars_.info_.keys()
+     for key, command in get_commands(category).items()]
+    return commands
 
 
 class Info:
     def __init__(self, name, brief, category='Miscellaneous', description=None, usage=None, aliases: list = None,
-                 settings: {str: str} = None,
-                 defaults: {str: str} = None):
+                 settings=None,
+                 defaults=None):
 
         if not description:
             description = brief
