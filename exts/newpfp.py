@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from mods import firestore, info, vars_
@@ -15,6 +16,7 @@ async def newpfp(ctx, arg='random'):
         uid = str(ctx.author.id)
         user_ = await firestore.get_user(uid)
         attachments = ctx.message.attachments
+        embed = discord.Embed(title='Newpfp')
         if attachments and attachments[0].filename.lower().split('.')[-1] in ['png', 'jpg']:
             arg = attachments[0].url
         elif arg in ['last', '^', '_']:
@@ -27,18 +29,26 @@ async def newpfp(ctx, arg='random'):
             await firestore.update_command_field(uid, 'newpfp', 'link', arg)
             await firestore.update_command_field(uid, 'newpfp', 'flag', True)
             await firestore.update_user_field(uid, 'flag', True)
-            await ctx.send("I've told your slave to update your avatar")
+            embed.description = "I've told your slave to update your avatar"
+            embed.colour = vars_.colour_success
+            await ctx.send(embed=embed)
             await firestore.update_command_field(uid, 'newpfp', 'flag', False)
             await firestore.update_user_field(uid, 'flag', False)
             return
 
-        result = await _new_avatar(ctx, user_, arg)
-        await ctx.send(result)
+        result, success = await _new_avatar(ctx, user_, arg)
+        if success:
+            embed.colour = vars_.colour_success
+        else:
+            embed.colour = vars_.colour_error
+        embed.description = result
+        await ctx.send(embed=embed)
 
 
 @newpfp.error
 async def newpfp_error(ctx, err):
-    await ctx.send(err)
+    e = discord.Embed(title="Newpfp", colour=vars_.colour_error, description=err)
+    await ctx.send(embed=e)
 
 
 async def _new_avatar(ctx, user_: dict, arg):
@@ -50,10 +60,9 @@ async def _new_avatar(ctx, user_: dict, arg):
         img_link = await get_cat_link()
     else:
         result = 'Are you sure you called the command correctly?'
-        return result
+        return result, False
     # print(img_link)
-    result = await change_avatar(user_, img_link)
-    return result
+    return await change_avatar(user_, img_link)
 
 
 def setup(bot):
@@ -62,6 +71,7 @@ def setup(bot):
         brief='changes your avatar to a random cat',
         description='use `settings newpfp timer <minutes>` to set a timer',
         usage='`newpfp [last|^|_]`',
+        category='Core',
         settings={
             'timer': int,
             'enabled': None,

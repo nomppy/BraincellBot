@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 from exts import whitelist
@@ -6,19 +7,23 @@ from mods import info, vars_
 
 @commands.command()
 async def blacklist(ctx, command=None, user=None):
-    if not user:
-        await ctx.send('You must provide both a command and a user!')
-        return
-    r = await whitelist.whitelist(ctx, command, user, True)
-    if r:
-        await ctx.send(r)
+    embed = discord.Embed(title='Blacklist')
+    if user:
+        r = await whitelist.whitelist(ctx, command, user, True)
+        embed.colour = vars_.colour_success
+        embed.description = r
+    else:
+        embed.colour = vars_.colour_error
+        embed.description = 'You must provide a command name'
+    await ctx.send(embed=embed)
 
 
 def setup(bot):
     info.Info(
         name='blacklist',
         brief='removes a user from the whitelist',
-        usage='`blacklist <user>`'
+        usage='`blacklist <user>`',
+        category='Access Control'
     ).export(vars_.info_)
 
     bot.add_command(blacklist)

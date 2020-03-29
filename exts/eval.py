@@ -5,10 +5,7 @@ from discord.ext import commands
 import textwrap
 import traceback
 
-from mods import admin
-from mods import token
-from mods import firestore
-from mods import info
+from mods import admin, token, firestore, info, vars_
 
 
 def cleanup_code(content):

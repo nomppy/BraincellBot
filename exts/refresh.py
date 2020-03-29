@@ -14,7 +14,8 @@ def setup(bot):
         name='refresh',
         brief='refreshes your custom token',
         description='if you chose to self-host and your token has expired, run this command to get a new one',
-        usage='`refresh`'
+        usage='`refresh`',
+        category='Account',
     ).export(vars_.info_)
 
     bot.add_command(refresh)

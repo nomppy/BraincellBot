@@ -1,5 +1,12 @@
+from mods import vars_
+
+
+def get_commands(category: str) -> list:
+    return vars_.info_[category].keys()
+
+
 class Info:
-    def __init__(self, name, brief, description=None, usage=None,
+    def __init__(self, name, brief, category='Miscellaneous', description=None, usage=None, aliases: list = None,
                  settings: {str: str} = None,
                  defaults: {str: str} = None):
 
@@ -7,13 +14,19 @@ class Info:
             description = brief
         self.name = name
         self.brief = brief
+        self.category = category
         self.description = description
         self.usage = usage
+        self.aliases = aliases
         self.settings = settings
         self.default = defaults
 
     def export(self, _dict: dict):
-        _dict[self.name] = self
+        if self.category in _dict.keys():
+            _dict[self.category][self.name] = self
+            return
+
+        _dict[self.category] = {self.name: self}
 
     def configurable(self):
         return self.settings is not None
@@ -44,5 +57,5 @@ class Info:
     def get_options(self, field: str):
         return self.settings[field]
 
-
-
+    def get_category(self):
+        return self.category

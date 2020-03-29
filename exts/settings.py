@@ -41,6 +41,7 @@ def setup(bot):
         name='settings',
         brief='configure things for commands',
         usage='settings [command] [option] [value]',
+        category='Account'
     ).export(vars_.info_)
 
     bot.add_command(settings)
