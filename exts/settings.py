@@ -16,13 +16,13 @@ class Settings(commands.Cog):
                 [options.join(opt) for opt in command.get_options(setting)]
             else:
                 if opt == 'any':
-                    options += "Any string"
+                    options += "any string"
                 elif opt == 'int':
-                    options += 'Any number'
+                    options += 'any number'
                 elif opt == 'none':
-                    options += 'Toggle true/false'
+                    options += 'toggle true/false'
                 else:
-                    options += 'No options'
+                    options += opt
 
             embed.add_field(name=setting, value=options, inline=False)
         return embed

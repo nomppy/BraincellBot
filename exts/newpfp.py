@@ -73,8 +73,8 @@ def setup(bot):
         usage='`newpfp [last|^|_]`',
         category='Core',
         settings={
-            'timer': int,
-            'enabled': None,
+            'timer': 'automatically change your pfp every ... (minutes)',
+            'enabled': 'none',
         },
         defaults={
             'timer': 0,  # off,
