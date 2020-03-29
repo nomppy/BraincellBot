@@ -78,10 +78,9 @@ def setup(bot):
         usage='`counter <user> [+|-]` or `<user> braincells[++|--]`',
         category='Core',
         settings={
-            'template': 'any',
-            'enabled': None,
-            'c': int,
-            'status': 'any',
+            'template': 'anything, use $COUNTER$ where you want the counter to go',
+            'enabled': 'none',
+            'c': 'actual number for the counter',
         },
         defaults={
             'template': 'Braincell Counter: $COUNTER$',

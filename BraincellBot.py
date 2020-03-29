@@ -87,7 +87,7 @@ async def on_message(message):
 
     if re.match(rf"^<@!?{bot.user.id}>$", message.content):
         if user_:
-            await message.channel.send(f'Hewwo {message.author.mention} your prefix is '
+            await message.channel.send(f'Hello {message.author.mention} your prefix is '
                                        f"**{user_['prefix']}**")
             return
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
