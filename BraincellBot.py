@@ -31,12 +31,13 @@ async def reload(ctx, modext=None):
         st.colour = vars_.colour_success
     elif not modext:
         st.description = "Here's a list of reloadable modules/extensions"
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field2', value='value2')
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field1', value='value1')
-        st.set_footer(text='footer text', icon_url=bot.user.avatar_url)
+        for category in vars_.info_.keys():
+            settings = vars_.info_[category].keys()
+            _ = ', '.join([str(setting) for setting in settings])
+
+            st.add_field(name=category, value=_, inline=False)
+        _ = ', '.join([str(mod) for mod in vars_.mods if str(mod) != '_'])
+        st.add_field(name='Modules', value=_, inline=False)
         st.colour = bot.user.colour
     else:
         try:
