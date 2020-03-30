@@ -10,7 +10,7 @@ from mods import vars_, info
 async def avatar(ctx, user=None):
     if not user:
         user = str(ctx.message.author.id)
-    url = await ctx.bot.get_avatar(ctx, user)
+    url = await get_avatar(ctx, user)
     embed = discord.Embed(
         title='Avatar'
     )
@@ -30,7 +30,7 @@ async def get_avatar(ctx, user):
         uid = match.group(0)
     else:
         return
-    user = ctx.bot.get_user(uid)
+    user = ctx.bot.get_user(int(uid))
     if not user:
         return
     avatar_url = user.avatar_url
