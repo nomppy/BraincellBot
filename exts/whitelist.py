@@ -45,7 +45,10 @@ async def whitelist(ctx, command=None, user=None, remove=False):
             else:
                 embed.description = 'Invalid user'
                 embed.colour = vars_.colour_error
-    ctx.send(embed=embed)
+    else:
+        embed.description = info.get_all_commands()['whitelist'].usage
+        embed.colour = vars_.colour_error
+    await ctx.send(embed=embed)
 
 
 def setup(bot):

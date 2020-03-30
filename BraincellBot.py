@@ -25,19 +25,20 @@ BOT_TOKEN = os.getenv('BOT_TOKEN')
 async def reload(ctx, modext=None):
     st = discord.Embed(
         title='Reload',
-    ).set_thumbnail(url=bot.user.avatar_url)
+    ).set_thumbnail(url=bot.user.avatar_url).set_footer(text=vars_.default_footer_text)
     if modext in ['-a', 'all', '--all']:
         st.description = await admin.reload_all(bot, mods, ignore)
         st.colour = vars_.colour_success
     elif not modext:
         st.description = "Here's a list of reloadable modules/extensions"
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field2', value='value2')
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field1', value='value1')
-        st.add_field(name='field1', value='value1')
-        st.set_footer(text='footer text', icon_url=bot.user.avatar_url)
-        st.colour = bot.user.colour
+        for category in vars_.info_.keys():
+            settings = vars_.info_[category].keys()
+            _ = ', '.join([str(setting) for setting in settings])
+
+            st.add_field(name=category, value=_, inline=False)
+        _ = ', '.join([str(mod) for mod in vars_.mods if str(mod) != '_'])
+        st.add_field(name='Modules', value=_, inline=False)
+        st.colour = ctx.guild.me.colour
     else:
         try:
             mods[modext], st.description = await admin.reload_load(modext, mods=mods)
