@@ -1,3 +1,4 @@
+import inspect
 import os
 import re
 import time
@@ -19,7 +20,7 @@ bot = commands.Bot(
 
 mods = vars_.mods
 ignore = vars_.ignore
-BOT_TOKEN = os.getenv('BOT_TOKEN')
+BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
 
 
 @commands.command()
@@ -114,8 +115,14 @@ async def on_message(message):
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
         return
 
-    if message.content == 'b!register':
-        await bot.get_command('register')(await bot.get_context(message))
+    if message.content[:2] == 'b!' and message.content.split(' ')[0][2:] in vars_.unregistered.keys():
+        c = bot.get_command(message.content[2:])
+        ctx = await bot.get_context(message)
+        if 'arg' in vars_.unregistered[c.name]:
+            u = message.content.split(' ')[1] if len(message.content.split(' ')) > 1 else None
+            await c(ctx, u)
+            return
+        await c(ctx)
         return
     if not user_ and message.content.startswith('b!'):
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
