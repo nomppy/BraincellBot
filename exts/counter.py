@@ -71,7 +71,7 @@ def setup(bot):
         name='counter',
         brief='counts things',
         description='allows other people to increase or decrease the counter in your status',
-        usage='``<user> braincells[++|--]`',
+        usage='`<user> braincells[++|--]`',
         category='Core',
         settings={
             'template': 'anything, use $COUNTER$ where you want the counter to go',

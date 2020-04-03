@@ -17,8 +17,6 @@ class Info:
                  settings=None,
                  defaults=None):
 
-        if not description:
-            description = brief
         self.name = name
         self.brief = brief
         self.category = category
@@ -37,6 +35,16 @@ class Info:
 
     def configurable(self):
         return self.settings is not None
+
+    def get_help(self):
+        return {
+            'Brief:': self.brief,
+            'Description:': self.description,
+            'Category:': self.category,
+            'Usage:': self.usage,
+            'Aliases:': ', '.join([f'`{a}`' for a in self.aliases]) if self.aliases is not None else None,
+            'Settings:': f'See `settings {self.name}`' if self.settings is not None else None,
+        }
 
     def validate_setting(self, field, value):
         if field not in self.settings.keys():
