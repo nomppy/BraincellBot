@@ -9,7 +9,9 @@ from mods import info, vars_
 async def alive(ctx):
     if ctx.author.bot:
         return
-    resp = ['Living the dream!', 'Alive and kicking!', 'Yes, but dead inside :(',
+    resp = ['Living the dream!',
+            'Alive and kicking!',
+            'Yes, but dead inside :(',
             'We\'re all gonna die anyway',
             'What\'s the point?']
     embed = discord.Embed(

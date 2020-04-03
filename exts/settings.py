@@ -27,7 +27,10 @@ async def _embed_available_settings(command, embed):
 async def settings(ctx, command=None, field=None, value=None):
     uid = str(ctx.author.id)
     command_ = await firestore.get_command(uid, command)
-    embed = discord.Embed(title="Settings", colour=ctx.guild.me.colour).set_footer(text=vars_.default_footer_text)
+    embed = discord.Embed(
+        title="Settings",
+        colour=ctx.guild.me.colour
+    ).set_footer(text=vars_.default_footer_text)
     _commands = info.get_all_commands()
 
     if not command:

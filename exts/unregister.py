@@ -9,7 +9,7 @@ from mods import firestore, info, vars_
 async def unregister(ctx, arg=None):
     user = ctx.author
     uid = str(user.id)
-    embed = discord.Embed(title='Unregister')
+    embed = discord.Embed(title='Unregister').set_footer(text=vars_.default_footer_text)
     try:
         if arg in ['-d', 'delete']:
             await firestore.delete_user(uid)

@@ -9,7 +9,7 @@ from mods import info
 
 @commands.command()
 async def counter(ctx, user=None):
-    embed = discord.Embed(title='Counter')
+    embed = discord.Embed(title='Counter').set_footer(text=vars_.default_footer_text)
     if not user:
         user = ctx.message.author
         uid = ctx.message.author.id
