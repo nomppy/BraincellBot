@@ -47,7 +47,11 @@ async def newpfp(ctx, arg='random'):
 
 @newpfp.error
 async def newpfp_error(ctx, err):
-    e = discord.Embed(title="Newpfp", colour=vars_.colour_error, description=err)
+    e = discord.Embed(
+        title="Newpfp",
+        colour=vars_.colour_error,
+        description=err
+    ).set_footer(text=vars_.default_footer_text)
     await ctx.send(embed=e)
 
 
