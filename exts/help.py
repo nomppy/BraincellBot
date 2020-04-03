@@ -45,6 +45,6 @@ def setup(bot):
         brief='Shows this help text',
         usage='`help [command]`',
         category='Info',
-    )
+    ).export(vars_.info_)
     bot.remove_command('help')
     bot.add_command(send_help)
