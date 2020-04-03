@@ -19,7 +19,7 @@ async def _embed_available_settings(command, embed):
             else:
                 options += opt
 
-        embed.add_field(name=setting, value=options, inline=False)
+        embed.add_field(name=f'{setting} ({command.default[setting]})', value=options, inline=False)
     return embed
 
 
@@ -41,7 +41,7 @@ async def settings(ctx, command=None, field=None, value=None):
         embed.colour = vars_.colour_error
     elif command and not field or command and field not in _commands[command].get_settings():
         embed.title = f'Settings - {command}'
-        embed.description = f"These are the available settings for {command}"
+        embed.description = f"These are the available settings for {command} (defaults in parenthesis)"
         embed = await _embed_available_settings(_commands[command], embed)
     elif not command or not field or not value:
         embed.description = "Incorrect syntax, see `help settings`"

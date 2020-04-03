@@ -13,7 +13,9 @@ from mods import firestore, vars_
 from mods import admin
 
 BOT_PREFIX = 'b!'
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(''))
+bot = commands.Bot(
+    command_prefix=commands.when_mentioned_or(''),
+)
 
 mods = vars_.mods
 ignore = vars_.ignore
@@ -29,15 +31,33 @@ async def reload(ctx, modext=None):
     if modext in ['-a', 'all', '--all']:
         st.description = await admin.reload_all(bot, mods, ignore)
         st.colour = vars_.colour_success
+    elif modext in ['-c', 'complete', '--complete']:
+        # Reloads twice to ensure all dependencies are reloaded
+        st.description = await admin.reload_all(bot, mods, ignore)
+        await admin.reload_all(bot, mods, ignore)
+        st.colour = vars_.colour_success
     elif not modext:
         st.description = "Here's a list of reloadable modules/extensions"
-        for category in vars_.info_.keys():
-            settings = vars_.info_[category].keys()
-            _ = ', '.join([str(setting) for setting in settings])
-
-            st.add_field(name=category, value=_, inline=False)
         _ = ', '.join([str(mod) for mod in vars_.mods if str(mod) != '_'])
-        st.add_field(name='Modules', value=_, inline=False)
+        [
+            st.add_field(
+                name=cat,
+                value=', '.join([
+                    f'`{str(set_)}`'
+                    for set_ in vars_.info_[cat].keys()
+                ]),
+                inline=False)
+            for cat in vars_.info_.keys()
+        ]
+        st.add_field(
+            name='Modules',
+            value=', '.join(
+                [
+                    f'`{str(mod)}`'
+                    for mod in list(vars_.mods.keys())[1:]
+                ]
+            ),
+            inline=False)
         st.colour = ctx.guild.me.colour
     else:
         try:
