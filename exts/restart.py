@@ -1,4 +1,5 @@
 import os
+import sys
 
 from discord.ext import commands
 
@@ -7,7 +8,8 @@ from discord.ext import commands
 @commands.is_owner()
 async def restart(ctx):
     await ctx.send('Restarting...')
-    os.system('nohup ./restart_bot.bash &')
+    os.execl(sys.executable, sys.executable, * sys.argv)
+    # os.system('nohup ./restart_bot.bash &')
 
 
 def setup(bot):

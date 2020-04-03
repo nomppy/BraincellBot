@@ -19,7 +19,7 @@ bot = commands.Bot(
 
 mods = vars_.mods
 ignore = vars_.ignore
-BOT_TOKEN = os.getenv('TEST_BOT_TOKEN')
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
 @commands.command()
@@ -84,6 +84,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     await admin.reload_all(bot, mods, ignore)
+    await bot.get_user(int(os.getenv('OWNER'))).send("I'm online!")
 
 
 last_braincell = time.mktime(time.gmtime(0))
