@@ -118,7 +118,7 @@ async def on_message(message):
     if message.content[:2] == 'b!' and message.content.split(' ')[0][2:] in vars_.unregistered.keys():
         c = bot.get_command(message.content[2:])
         ctx = await bot.get_context(message)
-        if 'arg' in vars_.unregistered[c.name]:
+        if vars_.unregistered[c.name] and 'arg' in vars_.unregistered[c.name]:
             u = message.content.split(' ')[1] if len(message.content.split(' ')) > 1 else None
             await c(ctx, u)
             return
