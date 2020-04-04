@@ -24,7 +24,7 @@ def setup(bot):
     info.Info(
         name='setprefix',
         brief='change your prefix',
-        usage='`[set]prefix <new_prefix>`',
+        usage='`setprefix <new_prefix>`',
         category='Access Control',
         aliases=['prefix'],
     ).export(vars_.info_)
