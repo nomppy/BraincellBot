@@ -84,8 +84,9 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    await admin.reload_all(bot, mods, ignore)
-    await bot.get_user(int(os.getenv('OWNER'))).send("I'm online!")
+    if not vars_.repeat_ready:
+        await bot.get_user(bot.owner_id).send("I'm online!")
+        vars_.repeat_ready = True
 
 
 last_braincell = time.mktime(time.gmtime(0))
@@ -142,4 +143,13 @@ async def on_message(message):
                     return
 
 
+await admin.reload_all(bot, mods, ignore)
 bot.run(BOT_TOKEN)
+
+
+
+
+
+
+
+

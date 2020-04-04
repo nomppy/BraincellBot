@@ -3,6 +3,7 @@ import discord
 mods = {'_': '_'}  # place holder
 ignore = ['_', 'vars_.py']  # ignore on loading phase
 info_ = {}
+repeat_ready = False
 unregistered = {
     'meow': None,
     'avatar': 'arg',
