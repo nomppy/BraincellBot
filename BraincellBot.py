@@ -16,6 +16,7 @@ from mods import admin
 BOT_PREFIX = 'b!'
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(''),
+    owner_id=179701226995318785,
 )
 
 mods = vars_.mods
