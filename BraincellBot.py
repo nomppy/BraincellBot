@@ -85,6 +85,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     if not vars_.repeat_ready:
+        await admin.reload_all(bot, mods, ignore)
         await bot.get_user(bot.owner_id).send("I'm online!")
         vars_.repeat_ready = True
 
@@ -143,7 +144,6 @@ async def on_message(message):
                     return
 
 
-await admin.reload_all(bot, mods, ignore)
 bot.run(BOT_TOKEN)
 
 
