@@ -17,7 +17,7 @@ async def meow(ctx):
         link = await get_cat_link()
         await ctx.send(embed=discord.Embed(
             colour=ctx.guild.me.colour
-        ).set_image(url=link).set_footer(text=vars_.default_footer_text))
+        ).set_image(url=link).set_footer(text=vars_.default_footer_text+' | thecatapi.com'))
     await firestore.update_command_field(str(ctx.author.id), 'meow', '_last', link)
 
 
