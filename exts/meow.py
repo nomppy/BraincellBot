@@ -29,8 +29,6 @@ async def meow_err(ctx, err):
     )
     if isinstance(err, commands.CommandOnCooldown):
         emb.description = f'On cooldown for another {round(err.retry_after, 1)} seconds'
-    else:
-        emb.description = 'An unknown error has occurred'
     await ctx.send(embed=emb)
 
 
