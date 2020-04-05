@@ -9,14 +9,14 @@ load_dotenv()
 
 
 async def _add_commands_settings(uid: str):
-    cmds = vars_.info_
-    for cmd in cmds:
-        if cmds[cmd].configurable():
-            defaults = cmds[cmd].get_defaults()
+    cmds = info.get_all_commands()
+    for k, v in cmds.items():
+        if v.configurable():
+            defaults = v.get_defaults()
             for field in defaults:
                 if defaults[field] == 'self':
                     defaults[field] = [uid]
-            await firestore.update_command_fields(uid, cmd, defaults)
+            await firestore.update_command_fields(uid, k, defaults)
 
 
 async def _self_host(user):
@@ -29,6 +29,12 @@ async def _self_host(user):
            'https://repl.it/@kenhtsun/BraincellBot-Client \n' \
            f'Your unique token is ```{custom_token}``` ... Keep this token safe!' \
            f'Your id is: `{uid}`\n The API key is: `{os.getenv("GOOGLE_API_KEY")}`'
+
+
+async def self_host_no_reg(user):
+    uid = str(user.id)
+    await firestore.update_user(uid, True, username=user.name, token='!', prefix='b!')
+    await _add_commands_settings(uid)
 
 
 class Register(commands.Cog):

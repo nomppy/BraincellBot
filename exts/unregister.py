@@ -18,10 +18,10 @@ async def unregister(ctx, arg=None):
         else:
             embed.description = 'Your account has been deactivated. '\
                  'I still have all your preferences saved should you like to reactive your account.\n ' \
-                 'Run `unregister -d` to completely delete your account.\n ' \
+                 'Run `b!unregister -d` to completely delete your account.\n ' \
                  'To reactivate your account, run `b!register` again.'
             embed.colour = vars_.colour_warning
-            await firestore.update_user(uid, self_=False, active=False)
+            await firestore.update_user(uid, self_=False, active=False, prefix='b!')
         await ctx.send(embed=embed)
     except NotFound:
         embed.colour = vars_.colour_error

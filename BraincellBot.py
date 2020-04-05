@@ -10,8 +10,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from mods import firestore, vars_
-from mods import admin
+from mods import firestore, vars_, admin
+from exts import register
 
 BOT_PREFIX = 'b!'
 bot = commands.Bot(
@@ -117,32 +117,29 @@ async def on_message(message):
             return
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
         return
-
-    if message.content[:2] == 'b!' and message.content.split(' ')[0][2:] in vars_.unregistered.keys():
-        c = bot.get_command(message.content[2:])
-        ctx = await bot.get_context(message)
-        if vars_.unregistered[c.name] and 'arg' in vars_.unregistered[c.name]:
-            u = message.content.split(' ')[1] if len(message.content.split(' ')) > 1 else None
-            await c(ctx, u)
-            return
-        await c(ctx)
-        return
     if not user_ and message.content.startswith('b!'):
-        await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
+        await register.self_host_no_reg(message.author)
+        message.content = message.content[2:]
+        await bot.process_commands(message)
         return
     if user_:  # if user not in database or account inactive
-        if not user_['active'] and message.guild is not None:
+        if not user_['active'] and message.guild is not None and message.content[2:] not in vars_.unreg:
             await message.channel.send("Your account is deactivated. Activate it by running `b!register`.")
             return
         else:
             prefix = user_['prefix']
             if message.content.startswith(prefix):
                 message.content = message.content[len(prefix):]
+                if user_['token'] == '!':
+                    await message.channel.send(f"{user.mention}*This is a one-time message: "
+                                               f"you were automatically registered "
+                                               "when you ran a command, to complete registration and gain access to "
+                                               f"core features run* `{prefix}register`")
+                    await firestore.update_user_field(uid, 'token', None)
                 try:
                     await bot.process_commands(message)
                 except CommandNotFound:
                     await message.channel.send("That command doesn't exist.")
-                    return
 
 
 bot.run(BOT_TOKEN)
