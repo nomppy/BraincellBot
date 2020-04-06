@@ -36,7 +36,7 @@ async def newpfp(ctx, arg='random'):
             await firestore.update_user_field(uid, 'flag', False)
             return
 
-        result, success = await _new_avatar(ctx, user_, arg)
+        result, success = await change_avatar(user_, arg)
         if success:
             embed.colour = vars_.colour_success
         else:
@@ -53,20 +53,6 @@ async def newpfp_error(ctx, err):
         description=err
     ).set_footer(text=vars_.default_footer_text)
     await ctx.send(embed=e)
-
-
-async def _new_avatar(ctx, user_: dict, arg):
-    if arg[-3:] in ['jpg', 'png']:
-        img_link = arg
-    elif len(ctx.message.attachments) == 1:
-        img_link = ctx.message.attachments[0].url
-    elif arg == 'random':
-        img_link = await get_cat_link()
-    else:
-        result = 'Are you sure you called the command correctly?'
-        return result, False
-    # print(img_link)
-    return await change_avatar(user_, img_link)
 
 
 def setup(bot):

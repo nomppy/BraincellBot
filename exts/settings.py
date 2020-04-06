@@ -58,7 +58,7 @@ async def settings(ctx, command=None, field=None, value=None):
             value = not command_[field]
         await firestore.update_command_field(uid, command, field, value)
         embed.title = f'Settings - {command}'
-        embed.description = f"I've updated {field}'s value to {value}"
+        embed.description = f"{field} has been set to {value}"
         embed.colour = vars_.colour_success
     await ctx.send(embed=embed)
 
