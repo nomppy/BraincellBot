@@ -89,6 +89,7 @@ async def on_ready():
         await admin.reload_all(bot, mods, ignore)
         await bot.get_user(bot.owner_id).send("I'm online!")
         vars_.repeat_ready = True
+    await bot.change_presence(activity=discord.Game(name='b!register'))
 
 
 last_braincell = time.mktime(time.gmtime(0))
