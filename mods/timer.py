@@ -13,7 +13,7 @@ class Timer:
     async def pull_pool(self):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            self.pool = {**{doc.id: dict(cb=on_timer_trigger(doc.id, doc.to_dict()['command']), **doc.to_dict())
+            self.pool = {**{doc.id: dict(cb=on_timer_trigger(doc.id, self.name), **doc.to_dict())
                             for doc in await firestore.get_pool(self.name)}, **self.pool}
 
     def add(self, uid: str, conf):
@@ -37,7 +37,7 @@ class Timer:
             await self.push_poll()
             await asyncio.sleep(30)
             for uid, conf in self.pool.items():
-                command_ = await firestore.get_command(uid, conf['command'])
+                command_ = await firestore.get_command(uid, self.name)
 
                 if datetime.utcnow() >= datetime.strptime(command_['scheduled'], "%Y-%m-%d %H:%M:%S.%f") \
                         and int(command_['timer']) != 0:

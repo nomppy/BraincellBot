@@ -59,7 +59,7 @@ async def settings(ctx, command=None, field=None, value=None):
         await firestore.update_command_field(uid, command, field, value)
         if command == 'newpfp' and field == 'timer':
             await timer.init_user_newpfp_timer(uid, value)
-            vars_.newpfp_timer.add(uid, {'command': 'newpfp', 'cb': timer.on_timer_trigger(uid, 'newpfp')})
+            vars_.newpfp_timer.add(uid, {'cb': timer.on_timer_trigger(uid, 'newpfp')})
 
         embed.title = f'Settings - {command}'
         embed.description = f"{field} has been set to {value}"
