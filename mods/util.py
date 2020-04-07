@@ -1,5 +1,15 @@
-import discord
+import asyncio
+
 from discord.ext import commands
+from mods import firestore
+
+
+async def flash_flag(uid, command):
+    await firestore.update_command_field(uid, command, 'flag', True)
+    await firestore.update_user_field(uid, 'flag', True)
+    await asyncio.sleep(0.1)
+    await firestore.update_command_field(uid, command, 'flag', False)
+    await firestore.update_user_field(uid, 'flag', False)
 
 
 def ctx_dict(ctx=None, dict_=None):
@@ -33,5 +43,4 @@ def message_dict(message=None, dict_=None):
             'author': message.author,
             'content': message.content,
             'id': message.id,
-
         }
