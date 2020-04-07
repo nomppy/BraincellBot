@@ -49,14 +49,16 @@ class Info:
     def validate_setting(self, field, value):
         if field not in self.settings.keys():
             return False
-        elif self.settings[field] is None or self.settings[field] == 'any':
-            return True
-        elif self.settings[field] == int:
+        elif type(self.default[field]) == int:
             try:
                 int(value)
                 return True
             except ValueError:
                 return False
+        elif type(self.default[field]) == bool:
+            return type(value) == bool
+        elif type(self.default[field]) == str:
+            return True
         elif value not in self.settings[field]:
             return False
 
