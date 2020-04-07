@@ -4,8 +4,11 @@ from contextlib import redirect_stdout
 from discord.ext import commands
 import textwrap
 import traceback
+import inspect
 
-from mods import admin, token, firestore, info, vars_
+from datetime import datetime, timedelta
+
+from mods import admin, token, firestore, info, vars_, timer
 
 
 def cleanup_code(content):
