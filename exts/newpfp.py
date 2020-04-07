@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from mods import firestore, info, vars_
+from mods import firestore, info, vars_, util
 from mods.core import get_cat_link
 from mods.core import change_avatar
 
@@ -27,16 +27,13 @@ async def newpfp(ctx, arg='random'):
         if user_['self']:
             # handle self-hosting here
             await firestore.update_command_field(uid, 'newpfp', 'link', arg)
-            await firestore.update_command_field(uid, 'newpfp', 'flag', True)
-            await firestore.update_user_field(uid, 'flag', True)
+            await util.flash_flag(uid, 'newpfp')
             embed.description = "I've told your slave to update your avatar"
             embed.colour = vars_.colour_success
             await ctx.send(embed=embed)
-            await firestore.update_command_field(uid, 'newpfp', 'flag', False)
-            await firestore.update_user_field(uid, 'flag', False)
             return
 
-        result, success = await _new_avatar(ctx, user_, arg)
+        result, success = await change_avatar(user_, arg)
         if success:
             embed.colour = vars_.colour_success
         else:
@@ -53,20 +50,6 @@ async def newpfp_error(ctx, err):
         description=err
     ).set_footer(text=vars_.default_footer_text)
     await ctx.send(embed=e)
-
-
-async def _new_avatar(ctx, user_: dict, arg):
-    if arg[-3:] in ['jpg', 'png']:
-        img_link = arg
-    elif len(ctx.message.attachments) == 1:
-        img_link = ctx.message.attachments[0].url
-    elif arg == 'random':
-        img_link = await get_cat_link()
-    else:
-        result = 'Are you sure you called the command correctly?'
-        return result, False
-    # print(img_link)
-    return await change_avatar(user_, img_link)
 
 
 def setup(bot):

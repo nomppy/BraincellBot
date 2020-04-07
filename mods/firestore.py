@@ -14,6 +14,18 @@ except ValueError:
 db = firestore.client(app)
 
 
+async def add_to_pool(name, uid: str, conf: dict):
+    await _write(f"pool/_/{name}/{uid}", {'command': conf['command']})
+
+
+async def remove_from_pool(name, uid: str):
+    await _delete(f"pool/_/{name}/{uid}")
+
+
+async def get_pool(name):
+    return await _get_all_coll(f'pool/_/{name}')
+
+
 async def update_user_field(uid: str, field, value):
     await _write(f'users/{uid}', {field: value})
 
@@ -29,6 +41,11 @@ async def update_command_fields(uid: str, command: str, field_values: dict):
 async def _get_doc(path):
     ref = db.document(path)
     return ref.get().to_dict()
+
+
+async def _get_all_coll(path):
+    ref = db.collection(path)
+    return ref.get()
 
 
 async def get_user(uid: str):

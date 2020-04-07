@@ -2,9 +2,8 @@ import re
 
 import discord
 from discord.ext import commands
-from mods import firestore, vars_
+from mods import firestore, vars_, info, util
 from mods.core import change_status
-from mods import info
 
 
 @commands.command()
@@ -49,12 +48,9 @@ async def counter(ctx, user=None):
         status = template.replace('$COUNTER$', str(count_))
         await firestore.update_command_field(uid, 'counter', 'status', status)
         if user_['self']:
-            await firestore.update_command_field(uid, 'counter', 'flag', True)
-            await firestore.update_user_field(uid, 'flag', True)
+            await util.flash_flag(uid, 'counter')
             embed.description = "I've instructed their slave to change their status"
             embed.colour = vars_.colour_success
-            await firestore.update_command_field(uid, 'counter', 'flag', False)
-            await firestore.update_user_field(uid, 'flag', False)
         else:
             resp = await change_status(user_['token'], status)
             if resp.status != 200:
