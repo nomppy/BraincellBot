@@ -1,4 +1,3 @@
-import inspect
 import os
 import re
 import time
@@ -10,7 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from mods import firestore, vars_, admin
+from mods import firestore, vars_, admin, timer
 from exts import register
 
 BOT_PREFIX = 'b!'
@@ -88,6 +87,7 @@ async def on_ready():
     if not vars_.repeat_ready:
         await admin.reload_all(bot, mods, ignore)
         await bot.get_user(bot.owner_id).send("I'm online!")
+        await vars_.newpfp_timer.run_timer()
         vars_.repeat_ready = True
     await bot.change_presence(activity=discord.Game(name='b!register'))
 
