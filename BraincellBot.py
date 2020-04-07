@@ -20,6 +20,7 @@ bot = commands.Bot(
 
 mods = vars_.mods
 ignore = vars_.ignore
+first_ready = True
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
@@ -84,11 +85,12 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    if not vars_.repeat_ready:
+    global first_ready
+    if first_ready:
         await admin.reload_all(bot, mods, ignore)
         await bot.get_user(bot.owner_id).send("I'm online!")
         await vars_.newpfp_timer.run_timer()
-        vars_.repeat_ready = True
+        first_ready = False
     await bot.change_presence(activity=discord.Game(name='b!register'))
 
 

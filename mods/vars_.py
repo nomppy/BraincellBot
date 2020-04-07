@@ -4,7 +4,6 @@ from mods import timer
 mods = {'_': '_'}  # place holder
 ignore = ['_', 'vars_.py']  # ignore on loading phase
 info_ = {}
-repeat_ready = False
 unreg = ['register', 'unregister -d', 'unregister']
 
 newpfp_timer = timer.Timer('newpfp')
