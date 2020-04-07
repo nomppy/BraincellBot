@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from mods import firestore, info, vars_
+from mods import firestore, info, vars_, timer
 
 
 async def _embed_available_settings(command, embed):
@@ -46,9 +46,9 @@ async def settings(ctx, command=None, field=None, value=None):
         embed.title = f'Settings - {command}'
         embed.description = f"These are the available settings for {command} (defaults in parenthesis)"
         embed = await _embed_available_settings(_commands[command], embed)
-    elif not command or not field or not value:
-        embed.description = "Incorrect syntax, see `help settings`"
-        embed.colour = vars_.colour_error
+    elif not value:
+        embed.description = f"The current value of {field} is `{(await firestore.get_command(uid, command))[field]}`"
+        embed.colour = ctx.guild.me.colour
     elif not _commands[command].validate_setting(field, value):
         embed.title = f'Settings - {command}'
         embed.description = "That isn't a valid option for this setting"
@@ -57,6 +57,10 @@ async def settings(ctx, command=None, field=None, value=None):
         if _commands[command].get_options(field) is None:
             value = not command_[field]
         await firestore.update_command_field(uid, command, field, value)
+        if command == 'newpfp' and field == 'timer':
+            await timer.init_user_newpfp_timer(uid, value)
+            vars_.newpfp_timer.add(uid, {'command': 'newpfp', 'cb': timer.on_timer_trigger(uid, 'newpfp')})
+
         embed.title = f'Settings - {command}'
         embed.description = f"{field} has been set to {value}"
         embed.colour = vars_.colour_success
