@@ -5,6 +5,7 @@ mods = {'_': '_'}  # place holder
 ignore = ['_', 'vars_.py']  # ignore on loading phase
 info_ = {}
 unreg = ['register', 'unregister -d', 'unregister']
+first_ready = True
 
 newpfp_timer = timer.Timer('newpfp')
 
