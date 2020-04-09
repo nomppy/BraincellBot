@@ -87,6 +87,7 @@ async def on_ready():
     print('------')
     global first_ready
     if first_ready:
+        print('First ready')
         await admin.reload_all(bot, mods, ignore)
         await bot.get_user(bot.owner_id).send("I'm online!")
         await vars_.newpfp_timer.run_timer()

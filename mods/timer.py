@@ -8,7 +8,7 @@ class Timer:
     def __init__(self, name):
         self.name = name
         self.pool = {}
-        self.run = True
+        self.run = False
 
     async def pull_pool(self):
         with warnings.catch_warnings():
@@ -32,16 +32,18 @@ class Timer:
         ]
 
     async def run_timer(self):
-        while self.run:
-            await self.pull_pool()
-            await self.push_poll()
-            await asyncio.sleep(30)
-            for uid, conf in self.pool.items():
-                command_ = await firestore.get_command(uid, self.name)
+        if not self.run:
+            self.run = True
+            while self.run:
+                await self.pull_pool()
+                await self.push_poll()
+                await asyncio.sleep(30)
+                for uid, conf in self.pool.items():
+                    command_ = await firestore.get_command(uid, self.name)
 
-                if datetime.utcnow() >= datetime.strptime(command_['scheduled'], "%Y-%m-%d %H:%M:%S.%f") \
-                        and int(command_['timer']) != 0:
-                    await conf['cb']
+                    if datetime.utcnow() >= datetime.strptime(command_['scheduled'], "%Y-%m-%d %H:%M:%S.%f") \
+                            and int(command_['timer']) != 0:
+                        await conf['cb']
 
 
 async def init_user_newpfp_timer(uid, interval):
