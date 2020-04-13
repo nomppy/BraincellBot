@@ -44,6 +44,8 @@ class Timer:
                     if datetime.utcnow() >= datetime.strptime(command_['scheduled'], "%Y-%m-%d %H:%M:%S.%f") \
                             and int(command_['timer']) != 0:
                         await conf['cb']
+        else:
+            return True
 
 
 async def init_user_newpfp_timer(uid, interval):

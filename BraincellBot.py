@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from datetime import datetime
 
 import discord
 from discord.ext import commands
@@ -20,6 +21,7 @@ bot = commands.Bot(
 
 mods = vars_.mods
 ignore = vars_.ignore
+first_ready = True
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 
 
@@ -80,17 +82,18 @@ bot.add_command(reload)
 
 @bot.event
 async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
-    if vars_.first_ready:
-        print('First ready')
+    global first_ready
+    if first_ready:
+        print('Logged in as')
+        print(bot.user.name)
+        print(bot.user.id)
+        print('------')
         await admin.reload_all(bot, mods, ignore)
+        print('------')
         await bot.get_user(bot.owner_id).send("I'm online!")
-        await vars_.newpfp_timer.run_timer()
-        vars_.first_ready = False
+        first_ready = False
     await bot.change_presence(activity=discord.Game(name='b!register'))
+    await vars_.newpfp_timer.run_timer()
 
 
 last_braincell = time.mktime(time.gmtime(0))
