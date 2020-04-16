@@ -35,7 +35,6 @@ class Timer:
         if not self.run:
             self.run = True
             while self.run:
-                await self.pull_pool()
                 await self.push_poll()
                 await asyncio.sleep(30)
                 for uid, conf in self.pool.items():
