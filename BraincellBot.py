@@ -127,6 +127,10 @@ async def on_message(message):
         message.content = message.content[2:]
         await bot.process_commands(message)
         return
+    if message.content.startswith('b!') and 'register' in message.content:
+        message.content = message.content[2:]
+        await bot.process_commands(message)
+        return
     if user_:  # if user not in database or account inactive
         if not user_['active'] and message.guild is not None and message.content[2:] not in vars_.unreg:
             await message.channel.send("Your account is deactivated. Activate it by running `b!register`.")
