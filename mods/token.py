@@ -13,7 +13,7 @@ except ValueError:
 
 
 def create_custom_token(uid: str):
-    auth.create_user(uid=uid)
+    auth.create_user(uid=uid, app=app)
     custom_token = auth.create_custom_token(uid, app=app)
     return custom_token
 
