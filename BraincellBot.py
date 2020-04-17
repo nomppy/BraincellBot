@@ -122,7 +122,7 @@ async def on_message(message):
             return
         await message.channel.send("You're not registered. \U0001F641 Run `b!register` to register.")
         return
-    if not user_ and message.content.startswith('b!'):
+    if not user_ and message.content.startswith('b!') and 'unregister' not in message.content:
         await register.self_host_no_reg(message.author)
         message.content = message.content[2:]
         await bot.process_commands(message)
