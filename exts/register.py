@@ -33,6 +33,7 @@ async def _self_host(user):
 
 async def self_host_no_reg(user):
     uid = str(user.id)
+    token.create_custom_token(uid).decode('utf-8')
     await firestore.update_user(uid, True, username=user.name, token='!', prefix='b!')
     await _add_commands_settings(uid)
 
