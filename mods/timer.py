@@ -28,7 +28,6 @@ class Timer:
         self.run = False
 
     async def push_poll(self):
-        await self.pull_pool()
         pool = [doc.id for doc in await firestore.get_pool(self.name)]
         [
             await firestore.add_to_pool(self.name, uid, conf)
@@ -36,11 +35,15 @@ class Timer:
             if uid not in pool
         ]
 
+    async def sync_poll(self):
+        await self.pull_pool()
+        await self.push_poll()
+
     async def run_timer(self):
         if not self.run:
             self.run = True
             while self.run:
-                await self.push_poll()
+                await self.sync_poll()
                 await asyncio.sleep(30)
                 for uid, conf in self.pool.items():
                     command_ = await firestore.get_command(uid, self.name)
