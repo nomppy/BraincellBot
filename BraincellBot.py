@@ -91,7 +91,7 @@ async def on_ready():
         print('------')
         await bot.get_user(bot.owner_id).send("I'm online!")
         first_ready = False
-    await bot.change_presence(activity=discord.Game(name='b!register'))
+    await bot.change_presence(activity=discord.Game(name='with some neurons'))
     await vars_.newpfp_timer.run_timer()
 
 
