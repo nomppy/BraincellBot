@@ -8,7 +8,7 @@ async def invite(ctx):
     await ctx.send(embed=discord.Embed(
         title='Click here!',
         colour=ctx.guild.me.colour,
-        url='https://discordapp.com/api/oauth2/authorize?client_id=681128428195282947&permissions=117824&scope=bot'
+        url='https://discord.com/api/oauth2/authorize?client_id=681128428195282947&permissions=117824&scope=bot'
     ))
 
 

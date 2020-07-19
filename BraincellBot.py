@@ -13,7 +13,6 @@ load_dotenv()
 from mods import firestore, vars_, admin, timer
 from exts import register
 
-BOT_PREFIX = 'b!'
 bot = commands.Bot(
     command_prefix=commands.when_mentioned_or(''),
     owner_id=179701226995318785,

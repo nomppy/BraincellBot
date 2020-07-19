@@ -4,18 +4,18 @@ import base64
 
 
 headers = {
-    'authority': 'discordapp.com',
+    'authority': 'discord.com',
     'accept-language': 'en-US',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) '
                   'Chrome/82.0.4069.0 Safari/537.36',
     'content-type': 'application/json',
     'accept': '*/*',
-    'origin': 'https://discordapp.com',
+    'origin': 'https://discord.com',
     'sec-fetch-site': 'same-origin',
     'sec-fetch-mode': 'cors',
     'sec-fetch-dest': 'empty',
-    'referer': 'https://discordapp.com/channels/@me'
+    'referer': 'https://discord.com/channels/@me'
 }
 
 
@@ -38,7 +38,7 @@ async def change_avatar(user_: dict, img_link):
         }
         headers['authorization'] = user_['token']
         data = json.dumps(data, separators=(',', ':'))
-        response = await session.patch('https://discordapp.com/api/v6/users/@me',
+        response = await session.patch('https://discord.com/api/v6/users/@me',
                                        headers=headers,
                                        data=data)
         await session.close()
@@ -57,7 +57,7 @@ async def change_status(token_, message):
     headers['authorization'] = token_
     status = json.dumps(status, separators=(',', ':'))
     async with aiohttp.ClientSession() as session:
-        response = await session.patch('https://discordapp.com/api/v6/users/@me/settings',
+        response = await session.patch('https://discord.com/api/v6/users/@me/settings',
                                        headers=headers,
                                        data=status)
         await session.close()
